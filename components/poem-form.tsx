@@ -10,7 +10,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { toast } from "@/components/ui/use-toast"
 import { createPoem, updatePoem } from "@/lib/actions"
-import { useAuth } from "@/lib/auth"
 import type { Poem } from "@/lib/types"
 
 interface PoemFormProps {
@@ -33,7 +32,6 @@ const CATEGORIES = [
 
 export function PoemForm({ mode, poem }: PoemFormProps) {
   const router = useRouter()
-  const { user } = useAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     title: poem?.title || "",
@@ -42,6 +40,9 @@ export function PoemForm({ mode, poem }: PoemFormProps) {
     category: poem?.category || "Nature",
   })
 
+  // For now, we'll use a dummy user ID since we haven't implemented authentication yet
+  const dummyUserId = "d9a1fc2e-d7a9-4c41-9f1a-318c6a8a292a" // Aria Nightshade
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
@@ -49,21 +50,17 @@ export function PoemForm({ mode, poem }: PoemFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    if (!user) {
-      toast({
-        title: "Please sign in",
-        description: "You need to sign in to create or edit poems.",
-      })
-      router.push("/login")
-      return
-    }
-
     setIsSubmitting(true)
 
     try {
       if (mode === "create") {
-        const result = await createPoem(formData.title, formData.content, formData.excerpt, formData.category, user.id)
+        const result = await createPoem(
+          formData.title,
+          formData.content,
+          formData.excerpt,
+          formData.category,
+          dummyUserId,
+        )
 
         if (result) {
           toast({
@@ -85,7 +82,7 @@ export function PoemForm({ mode, poem }: PoemFormProps) {
           formData.content,
           formData.excerpt,
           formData.category,
-          user.id,
+          dummyUserId,
         )
 
         if (result.success) {
