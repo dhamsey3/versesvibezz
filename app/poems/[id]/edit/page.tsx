@@ -4,7 +4,6 @@ import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
-import { PoemForm } from "@/components/poem-form"
 import { getPoemById } from "@/lib/actions"
 
 export default async function EditPoemPage({
@@ -33,7 +32,12 @@ export default async function EditPoemPage({
             <p className="mt-2 text-muted-foreground">Make changes to your poem and update it.</p>
           </div>
 
-          <PoemForm mode="edit" poem={poem} />
+          <div className="space-y-6">
+            <p>Please sign in to edit this poem.</p>
+            <Link href="/login">
+              <Button>Sign In</Button>
+            </Link>
+          </div>
         </div>
       </main>
       <SiteFooter />

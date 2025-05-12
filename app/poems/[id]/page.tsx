@@ -1,14 +1,11 @@
 import Link from "next/link"
-import { ArrowLeft, Calendar, Heart, User, Edit, Share2 } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import { notFound } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
-import { CommentSection } from "@/components/comment-section"
-import { LikeButton } from "@/components/like-button"
-import { getCommentsByPoemId, getPoemById } from "@/lib/actions"
-import { DeletePoemButton } from "@/components/delete-poem-button"
+import { getPoemById } from "@/lib/actions"
 
 export default async function PoemPage({ params }: { params: { id: string } }) {
   // Fetch the poem from the database
@@ -18,9 +15,6 @@ export default async function PoemPage({ params }: { params: { id: string } }) {
   if (!poem) {
     notFound()
   }
-
-  // Fetch comments for this poem
-  const comments = await getCommentsByPoemId(params.id)
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -34,25 +28,8 @@ export default async function PoemPage({ params }: { params: { id: string } }) {
               </Button>
             </Link>
             <h1 className="text-4xl font-bold tracking-tight md:text-5xl">{poem.title}</h1>
-            <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <User className="h-4 w-4" />
-                <span>{poem.author?.username || "Unknown"}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Calendar className="h-4 w-4" />
-                <time dateTime={poem.created_at}>
-                  {new Date(poem.created_at).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </time>
-              </div>
-              <div className="flex items-center gap-1">
-                <Heart className="h-4 w-4" />
-                <span>{poem.likes} likes</span>
-              </div>
+            <div className="mt-4 text-sm text-muted-foreground">
+              By {poem.author?.username || "Unknown"} • {new Date(poem.created_at).toLocaleDateString()}
             </div>
           </div>
 
@@ -61,27 +38,10 @@ export default async function PoemPage({ params }: { params: { id: string } }) {
           </div>
 
           <div className="mt-8 flex items-center justify-between border-t border-b py-4">
-            <div className="flex items-center gap-2">
-              <LikeButton poemId={poem.id} initialLikes={poem.likes} />
-              <Button variant="outline" size="sm" className="gap-1">
-                <Share2 className="h-4 w-4" />
-                <span>Share</span>
-              </Button>
-
-              <Link href={`/poems/${poem.id}/edit`}>
-                <Button variant="outline" size="sm" className="gap-1">
-                  <Edit className="h-4 w-4" />
-                  <span>Edit</span>
-                </Button>
-              </Link>
-              <DeletePoemButton poemId={poem.id} />
-            </div>
             <div className="text-sm text-muted-foreground">
               <span className="font-medium">{poem.category}</span>
             </div>
           </div>
-
-          <CommentSection poemId={poem.id} comments={comments} />
         </article>
       </main>
       <SiteFooter />

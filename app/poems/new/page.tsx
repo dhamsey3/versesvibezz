@@ -3,7 +3,6 @@ import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
-import { PoemForm } from "@/components/poem-form"
 
 export default function NewPoemPage() {
   return (
@@ -21,7 +20,12 @@ export default function NewPoemPage() {
             <p className="mt-2 text-muted-foreground">Share your poetic creations with the VersesVibez community.</p>
           </div>
 
-          <PoemForm mode="create" />
+          <div className="space-y-6">
+            <p>Please sign in to create a poem.</p>
+            <Link href="/login">
+              <Button>Sign In</Button>
+            </Link>
+          </div>
         </div>
       </main>
       <SiteFooter />
