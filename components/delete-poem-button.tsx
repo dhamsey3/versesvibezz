@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { toast } from "@/components/ui/use-toast"
 import { deletePoem } from "@/lib/actions"
+import { useAuth } from "@/lib/auth"
 
 interface DeletePoemButtonProps {
   poemId: string
@@ -25,15 +26,19 @@ interface DeletePoemButtonProps {
 export function DeletePoemButton({ poemId }: DeletePoemButtonProps) {
   const router = useRouter()
   const [isDeleting, setIsDeleting] = useState(false)
+  const { user } = useAuth()
+
+  if (!user) {
+    return null // Don't show delete button if user is not logged in
+  }
 
   const handleDelete = async () => {
+    if (!user) return
+
     setIsDeleting(true)
 
     try {
-      // For now, we'll use a dummy user ID since we haven't implemented authentication yet
-      const dummyUserId = "d9a1fc2e-d7a9-4c41-9f1a-318c6a8a292a" // Aria Nightshade
-
-      const result = await deletePoem(poemId, dummyUserId)
+      const result = await deletePoem(poemId, user.id)
 
       if (result.success) {
         toast({

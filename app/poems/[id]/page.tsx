@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { ArrowLeft, Calendar, Heart, Share2, User, Edit } from "lucide-react"
+import { ArrowLeft, Calendar, Heart, User, Edit } from "lucide-react"
 import { notFound } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
@@ -7,6 +7,7 @@ import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { CommentSection } from "@/components/comment-section"
 import { LikeButton } from "@/components/like-button"
+import { ShareButton } from "@/components/share-button"
 import { getCommentsByPoemId, getPoemById } from "@/lib/actions"
 import { DeletePoemButton } from "@/components/delete-poem-button"
 
@@ -63,12 +64,8 @@ export default async function PoemPage({ params }: { params: { id: string } }) {
           <div className="mt-8 flex items-center justify-between border-t border-b py-4">
             <div className="flex items-center gap-2">
               <LikeButton poemId={poem.id} initialLikes={poem.likes} />
-              <Button variant="outline" size="sm" className="gap-1">
-                <Share2 className="h-4 w-4" />
-                <span>Share</span>
-              </Button>
+              <ShareButton poemId={poem.id} poemTitle={poem.title} />
 
-              {/* Add these buttons */}
               <Link href={`/poems/${poem.id}/edit`}>
                 <Button variant="outline" size="sm" className="gap-1">
                   <Edit className="h-4 w-4" />

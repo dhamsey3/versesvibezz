@@ -4,12 +4,14 @@ import type React from "react"
 
 import { useState } from "react"
 import { Send } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/components/ui/use-toast"
 import { addComment } from "@/lib/actions"
+import { useAuth } from "@/lib/auth"
 
 interface CommentSectionProps {
   poemId: string
@@ -28,9 +30,8 @@ interface CommentSectionProps {
 export function CommentSection({ poemId, comments }: CommentSectionProps) {
   const [comment, setComment] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
-
-  // For now, we'll use a dummy user ID since we haven't implemented authentication yet
-  const dummyUserId = "d9a1fc2e-d7a9-4c41-9f1a-318c6a8a292a" // Aria Nightshade
+  const { user } = useAuth()
+  const router = useRouter()
 
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setComment(e.target.value)
@@ -38,6 +39,16 @@ export function CommentSection({ poemId, comments }: CommentSectionProps) {
 
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!user) {
+      toast({
+        title: "Please sign in",
+        description: "You need to sign in to comment on poems.",
+      })
+
+      router.push("/login")
+      return
+    }
 
     if (!comment.trim()) {
       toast({
@@ -51,7 +62,7 @@ export function CommentSection({ poemId, comments }: CommentSectionProps) {
     setIsSubmitting(true)
 
     try {
-      await addComment(poemId, dummyUserId, comment)
+      await addComment(poemId, user.id, comment)
       setComment("")
       toast({
         title: "Success",
@@ -79,20 +90,24 @@ export function CommentSection({ poemId, comments }: CommentSectionProps) {
       <form onSubmit={handleSubmitComment} className="mb-8">
         <div className="flex gap-4">
           <Avatar>
-            <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aria" alt="Your avatar" />
-            <AvatarFallback>AN</AvatarFallback>
+            <AvatarImage
+              src={user?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.username || "guest"}`}
+              alt={(user?.username || "Guest") + "'s avatar"}
+            />
+            <AvatarFallback>{user ? user.username.substring(0, 2).toUpperCase() : "GU"}</AvatarFallback>
           </Avatar>
           <div className="flex-1 space-y-2">
             <Textarea
-              placeholder="Share your thoughts on this poem..."
+              placeholder={user ? "Share your thoughts on this poem..." : "Sign in to comment..."}
               value={comment}
               onChange={handleCommentChange}
               className="min-h-[100px]"
+              disabled={!user}
             />
             <div className="flex justify-end">
-              <Button type="submit" className="gap-1" disabled={isSubmitting}>
+              <Button type="submit" className="gap-1" disabled={isSubmitting || !user}>
                 <Send className="h-4 w-4" />
-                <span>{isSubmitting ? "Posting..." : "Post Comment"}</span>
+                <span>{!user ? "Sign in to comment" : isSubmitting ? "Posting..." : "Post Comment"}</span>
               </Button>
             </div>
           </div>

@@ -5,6 +5,8 @@ import { Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { likePoem } from "@/lib/actions"
 import { toast } from "@/components/ui/use-toast"
+import { useAuth } from "@/lib/auth"
+import { useRouter } from "next/navigation"
 
 interface LikeButtonProps {
   poemId: string
@@ -15,17 +17,26 @@ export function LikeButton({ poemId, initialLikes }: LikeButtonProps) {
   const [likes, setLikes] = useState(initialLikes)
   const [isLiking, setIsLiking] = useState(false)
   const [hasLiked, setHasLiked] = useState(false)
-
-  // For now, we'll use a dummy user ID since we haven't implemented authentication yet
-  const dummyUserId = "d9a1fc2e-d7a9-4c41-9f1a-318c6a8a292a" // Aria Nightshade
+  const { user } = useAuth()
+  const router = useRouter()
 
   const handleLike = async () => {
     if (isLiking) return
 
+    if (!user) {
+      toast({
+        title: "Please sign in",
+        description: "You need to sign in to like poems.",
+      })
+
+      router.push("/login")
+      return
+    }
+
     setIsLiking(true)
 
     try {
-      const result = await likePoem(poemId, dummyUserId)
+      const result = await likePoem(poemId, user.id)
 
       if (result.liked) {
         setLikes((prev) => prev + 1)

@@ -4,6 +4,7 @@ import { BookOpen, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { ModeToggle } from "@/components/mode-toggle"
+import { UserProfile } from "@/components/user-profile"
 
 export function SiteHeader() {
   return (
@@ -28,6 +29,7 @@ export function SiteHeader() {
           </Link>
         </nav>
         <div className="flex flex-1 items-center justify-end gap-2">
+          <UserProfile />
           <ModeToggle />
           <Sheet>
             <SheetTrigger asChild>

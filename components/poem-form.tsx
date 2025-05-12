@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "@/components/ui/use-toast"
 import { createPoem, updatePoem } from "@/lib/actions"
+import { useAuth } from "@/lib/auth"
 import type { Poem } from "@/lib/types"
 
 interface PoemFormProps {
@@ -33,6 +34,7 @@ const CATEGORIES = [
 
 export function PoemForm({ mode, poem }: PoemFormProps) {
   const router = useRouter()
+  const { user } = useAuth()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     title: poem?.title || "",
@@ -52,20 +54,21 @@ export function PoemForm({ mode, poem }: PoemFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!user) {
+      toast({
+        title: "Please sign in",
+        description: "You need to sign in to create or edit poems.",
+      })
+      router.push("/login")
+      return
+    }
+
     setIsSubmitting(true)
 
     try {
-      // For now, we'll use a dummy user ID since we haven't implemented authentication yet
-      const dummyUserId = "d9a1fc2e-d7a9-4c41-9f1a-318c6a8a292a" // Aria Nightshade
-
       if (mode === "create") {
-        const result = await createPoem(
-          formData.title,
-          formData.content,
-          formData.excerpt,
-          formData.category,
-          dummyUserId,
-        )
+        const result = await createPoem(formData.title, formData.content, formData.excerpt, formData.category, user.id)
 
         if (result) {
           toast({
@@ -87,7 +90,7 @@ export function PoemForm({ mode, poem }: PoemFormProps) {
           formData.content,
           formData.excerpt,
           formData.category,
-          dummyUserId,
+          user.id,
         )
 
         if (result.success) {
@@ -163,8 +166,8 @@ export function PoemForm({ mode, poem }: PoemFormProps) {
 
       <div className="space-y-2">
         <Label htmlFor="category">Category</Label>
-        <Select value={formData.category} onValueChange={handleCategoryChange}>
-          <SelectTrigger>
+        <Select defaultValue={formData.category} onValueChange={handleCategoryChange}>
+          <SelectTrigger id="category">
             <SelectValue placeholder="Select a category" />
           </SelectTrigger>
           <SelectContent>
