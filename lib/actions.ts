@@ -153,8 +153,6 @@ export async function subscribeToNewsletter(formData: FormData) {
   return { success: true, message: "You have been subscribed to our newsletter!" }
 }
 
-// Add these functions to your existing actions.ts file
-
 // Create a new poem
 export async function createPoem(title: string, content: string, excerpt: string, category: string, authorId: string) {
   const supabase = createServerSupabaseClient()
