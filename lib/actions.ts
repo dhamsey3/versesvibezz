@@ -172,12 +172,15 @@ export async function updatePoem(formData: FormData) {
   const content = formData.get("content") as string
   const category = formData.get("category") as string
   const authorId = formData.get("authorId") as string
+  const isAdmin = formData.get("isAdmin") === "true"
 
-  // Check if user is the author
-  const { data: poem } = await supabase.from("poems").select("author_id").eq("id", id).single()
+  // Check if user is the author or an admin
+  if (!isAdmin) {
+    const { data: poem } = await supabase.from("poems").select("author_id").eq("id", id).single()
 
-  if (!poem || poem.author_id !== authorId) {
-    return { success: false, error: "You are not authorized to edit this poem" }
+    if (!poem || poem.author_id !== authorId) {
+      return { success: false, error: "You are not authorized to edit this poem" }
+    }
   }
 
   // Create excerpt from content
@@ -216,12 +219,15 @@ export async function deletePoem(formData: FormData) {
 
   const id = formData.get("id") as string
   const authorId = formData.get("authorId") as string
+  const isAdmin = formData.get("isAdmin") === "true"
 
-  // Check if user is the author
-  const { data: poem } = await supabase.from("poems").select("author_id").eq("id", id).single()
+  // Check if user is the author or an admin
+  if (!isAdmin) {
+    const { data: poem } = await supabase.from("poems").select("author_id").eq("id", id).single()
 
-  if (!poem || poem.author_id !== authorId) {
-    return { success: false, error: "You are not authorized to delete this poem" }
+    if (!poem || poem.author_id !== authorId) {
+      return { success: false, error: "You are not authorized to delete this poem" }
+    }
   }
 
   const { error } = await supabase.from("poems").delete().eq("id", id)

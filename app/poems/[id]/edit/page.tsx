@@ -16,6 +16,8 @@ export default function EditPoemPage({ params }: { params: { id: string } }) {
   const [error, setError] = useState("")
   const { toast } = useToast()
 
+  const isUserAdmin = user?.id === "your-admin-user-id" // Replace with actual check
+
   useEffect(() => {
     const fetchPoem = async () => {
       try {
@@ -115,6 +117,7 @@ export default function EditPoemPage({ params }: { params: { id: string } }) {
         <PoemForm
           mode="edit"
           userId={user.id}
+          isAdmin={isUserAdmin}
           poem={{
             id: poem.id,
             title: poem.title,

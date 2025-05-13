@@ -4,17 +4,15 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { createPoem, updatePoem } from "@/lib/actions"
+import { createPost, updatePost } from "@/lib/blog-actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/components/ui/use-toast"
 
-type PoemFormProps = {
+type PostFormProps = {
   mode: "create" | "edit"
-  userId: string
-  isAdmin?: boolean
-  poem?: {
+  post?: {
     id: string
     title: string
     content: string
@@ -24,10 +22,10 @@ type PoemFormProps = {
 
 const CATEGORIES = ["Nature", "Love", "Life", "Reflective", "Other"]
 
-export function PoemForm({ mode, userId, poem, isAdmin }: PoemFormProps) {
-  const [title, setTitle] = useState(poem?.title || "")
-  const [content, setContent] = useState(poem?.content || "")
-  const [category, setCategory] = useState(poem?.category || "Nature")
+export function PostForm({ mode, post }: PostFormProps) {
+  const [title, setTitle] = useState(post?.title || "")
+  const [content, setContent] = useState(post?.content || "")
+  const [category, setCategory] = useState(post?.category || "Nature")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
@@ -40,18 +38,16 @@ export function PoemForm({ mode, userId, poem, isAdmin }: PoemFormProps) {
     formData.append("title", title)
     formData.append("content", content)
     formData.append("category", category)
-    formData.append("authorId", userId)
-    formData.append("isAdmin", isAdmin ? "true" : "false")
 
     try {
       if (mode === "create") {
-        const result = await createPoem(formData)
+        const result = await createPost(formData)
         if (result.success) {
           toast({
             title: "Success",
             description: "Poem created successfully",
           })
-          router.push(`/poems/${result.poem.id}`)
+          router.push(`/admin/dashboard`)
         } else {
           toast({
             title: "Error",
@@ -59,15 +55,15 @@ export function PoemForm({ mode, userId, poem, isAdmin }: PoemFormProps) {
             variant: "destructive",
           })
         }
-      } else if (mode === "edit" && poem) {
-        formData.append("id", poem.id)
-        const result = await updatePoem(formData)
+      } else if (mode === "edit" && post) {
+        formData.append("id", post.id)
+        const result = await updatePost(formData)
         if (result.success) {
           toast({
             title: "Success",
             description: "Poem updated successfully",
           })
-          router.push(`/poems/${poem.id}`)
+          router.push(`/admin/dashboard`)
         } else {
           toast({
             title: "Error",
@@ -104,7 +100,7 @@ export function PoemForm({ mode, userId, poem, isAdmin }: PoemFormProps) {
           id="content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="min-h-[200px]"
+          className="min-h-[300px]"
           required
         />
       </div>

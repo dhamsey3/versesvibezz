@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
-import { LoginForm } from "@/components/auth/login-form"
 
 export default function LoginPage() {
   return (
@@ -15,7 +14,12 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          <LoginForm />
+          <div className="w-full max-w-md space-y-6">
+            <div className="space-y-2 text-center">
+              <h1 className="text-3xl font-bold">Login</h1>
+              <p className="text-gray-500 dark:text-gray-400">Login functionality is temporarily unavailable.</p>
+            </div>
+          </div>
         </div>
       </main>
       <SiteFooter />
