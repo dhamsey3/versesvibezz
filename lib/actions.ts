@@ -123,6 +123,120 @@ export async function likePoem(poemId: string, userId: string) {
   }
 }
 
+// Create a new poem
+export async function createPoem(formData: FormData) {
+  const supabase = createServerSupabaseClient()
+
+  const title = formData.get("title") as string
+  const content = formData.get("content") as string
+  const category = formData.get("category") as string
+  const authorId = formData.get("authorId") as string
+
+  // Create excerpt from content
+  let excerpt = content.substring(0, 150)
+  if (content.length > 150) {
+    excerpt += "..."
+  }
+
+  const { data, error } = await supabase
+    .from("poems")
+    .insert([
+      {
+        title,
+        content,
+        excerpt,
+        category,
+        author_id: authorId,
+        likes: 0,
+      },
+    ])
+    .select()
+
+  if (error) {
+    console.error("Error creating poem:", error)
+    return { success: false, error: error.message }
+  }
+
+  revalidatePath("/poems")
+  revalidatePath("/")
+
+  return { success: true, poem: data[0] }
+}
+
+// Update an existing poem
+export async function updatePoem(formData: FormData) {
+  const supabase = createServerSupabaseClient()
+
+  const id = formData.get("id") as string
+  const title = formData.get("title") as string
+  const content = formData.get("content") as string
+  const category = formData.get("category") as string
+  const authorId = formData.get("authorId") as string
+
+  // Check if user is the author
+  const { data: poem } = await supabase.from("poems").select("author_id").eq("id", id).single()
+
+  if (!poem || poem.author_id !== authorId) {
+    return { success: false, error: "You are not authorized to edit this poem" }
+  }
+
+  // Create excerpt from content
+  let excerpt = content.substring(0, 150)
+  if (content.length > 150) {
+    excerpt += "..."
+  }
+
+  const { data, error } = await supabase
+    .from("poems")
+    .update({
+      title,
+      content,
+      excerpt,
+      category,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .select()
+
+  if (error) {
+    console.error("Error updating poem:", error)
+    return { success: false, error: error.message }
+  }
+
+  revalidatePath(`/poems/${id}`)
+  revalidatePath("/poems")
+  revalidatePath("/")
+
+  return { success: true, poem: data[0] }
+}
+
+// Delete a poem
+export async function deletePoem(formData: FormData) {
+  const supabase = createServerSupabaseClient()
+
+  const id = formData.get("id") as string
+  const authorId = formData.get("authorId") as string
+
+  // Check if user is the author
+  const { data: poem } = await supabase.from("poems").select("author_id").eq("id", id).single()
+
+  if (!poem || poem.author_id !== authorId) {
+    return { success: false, error: "You are not authorized to delete this poem" }
+  }
+
+  const { error } = await supabase.from("poems").delete().eq("id", id)
+
+  if (error) {
+    console.error("Error deleting poem:", error)
+    return { success: false, error: error.message }
+  }
+
+  revalidatePath("/poems")
+  revalidatePath("/")
+
+  return { success: true }
+}
+
 // Submit contact form
 export async function submitContactForm(formData: FormData) {
   // In a real application, you would store this in a database
@@ -151,119 +265,4 @@ export async function subscribeToNewsletter(formData: FormData) {
   await new Promise((resolve) => setTimeout(resolve, 1000))
 
   return { success: true, message: "You have been subscribed to our newsletter!" }
-}
-
-// Create a new poem
-export async function createPoem(title: string, content: string, excerpt: string, category: string, authorId: string) {
-  const supabase = createServerSupabaseClient()
-
-  // Create excerpt from content if not provided
-  if (!excerpt) {
-    // Take first 150 characters of content as excerpt
-    excerpt = content.substring(0, 150)
-    // Add ellipsis if content is longer than 150 characters
-    if (content.length > 150) {
-      excerpt += "..."
-    }
-  }
-
-  const { data, error } = await supabase
-    .from("poems")
-    .insert([
-      {
-        title,
-        content,
-        excerpt,
-        category,
-        author_id: authorId,
-        likes: 0,
-      },
-    ])
-    .select()
-
-  if (error) {
-    console.error("Error creating poem:", error)
-    return null
-  }
-
-  revalidatePath("/poems")
-  revalidatePath("/")
-
-  return data[0]
-}
-
-// Update an existing poem
-export async function updatePoem(
-  id: string,
-  title: string,
-  content: string,
-  excerpt: string,
-  category: string,
-  authorId: string,
-) {
-  const supabase = createServerSupabaseClient()
-
-  // First check if the user is the author of the poem
-  const { data: poem } = await supabase.from("poems").select("author_id").eq("id", id).single()
-
-  if (!poem || poem.author_id !== authorId) {
-    return { success: false, message: "You are not authorized to edit this poem" }
-  }
-
-  // Create excerpt from content if not provided
-  if (!excerpt) {
-    // Take first 150 characters of content as excerpt
-    excerpt = content.substring(0, 150)
-    // Add ellipsis if content is longer than 150 characters
-    if (content.length > 150) {
-      excerpt += "..."
-    }
-  }
-
-  const { data, error } = await supabase
-    .from("poems")
-    .update({
-      title,
-      content,
-      excerpt,
-      category,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", id)
-    .select()
-
-  if (error) {
-    console.error("Error updating poem:", error)
-    return { success: false, message: "Failed to update poem" }
-  }
-
-  revalidatePath(`/poems/${id}`)
-  revalidatePath("/poems")
-  revalidatePath("/")
-
-  return { success: true, poem: data[0] }
-}
-
-// Delete a poem
-export async function deletePoem(id: string, authorId: string) {
-  const supabase = createServerSupabaseClient()
-
-  // First check if the user is the author of the poem
-  const { data: poem } = await supabase.from("poems").select("author_id").eq("id", id).single()
-
-  if (!poem || poem.author_id !== authorId) {
-    return { success: false, message: "You are not authorized to delete this poem" }
-  }
-
-  const { error } = await supabase.from("poems").delete().eq("id", id)
-
-  if (error) {
-    console.error("Error deleting poem:", error)
-    return { success: false, message: "Failed to delete poem" }
-  }
-
-  revalidatePath("/poems")
-  revalidatePath("/")
-
-  return { success: true, message: "Poem deleted successfully" }
 }

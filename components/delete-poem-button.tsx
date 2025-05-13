@@ -2,90 +2,74 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Trash2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { toast } from "@/components/ui/use-toast"
 import { deletePoem } from "@/lib/actions"
+import { Button } from "@/components/ui/button"
+import { useToast } from "@/components/ui/use-toast"
 
-interface DeletePoemButtonProps {
+type DeletePoemButtonProps = {
   poemId: string
+  userId: string
 }
 
-export function DeletePoemButton({ poemId }: DeletePoemButtonProps) {
-  const router = useRouter()
+export function DeletePoemButton({ poemId, userId }: DeletePoemButtonProps) {
   const [isDeleting, setIsDeleting] = useState(false)
-
-  // For now, we'll use a dummy user ID since we haven't implemented authentication yet
-  const dummyUserId = "d9a1fc2e-d7a9-4c41-9f1a-318c6a8a292a" // Aria Nightshade
+  const [showConfirm, setShowConfirm] = useState(false)
+  const router = useRouter()
+  const { toast } = useToast()
 
   const handleDelete = async () => {
     setIsDeleting(true)
 
-    try {
-      const result = await deletePoem(poemId, dummyUserId)
+    const formData = new FormData()
+    formData.append("id", poemId)
+    formData.append("authorId", userId)
 
+    try {
+      const result = await deletePoem(formData)
       if (result.success) {
         toast({
-          title: "Success!",
-          description: "Your poem has been deleted.",
+          title: "Success",
+          description: "Poem deleted successfully",
         })
         router.push("/poems")
       } else {
         toast({
           title: "Error",
-          description: result.message || "Failed to delete your poem. Please try again.",
+          description: result.error || "Failed to delete poem",
           variant: "destructive",
         })
       }
-    } catch (error) {
-      console.error("Error deleting poem:", error)
+    } catch (err) {
       toast({
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        description: "An unexpected error occurred",
         variant: "destructive",
       })
     } finally {
       setIsDeleting(false)
+      setShowConfirm(false)
     }
   }
 
+  if (showConfirm) {
+    return (
+      <div className="mt-4 p-4 border rounded bg-red-50 dark:bg-red-950">
+        <p className="mb-2">Are you sure you want to delete this poem? This action cannot be undone.</p>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setShowConfirm(false)} disabled={isDeleting}>
+            Cancel
+          </Button>
+          <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
+            {isDeleting ? "Deleting..." : "Confirm Delete"}
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-1 text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950"
-        >
-          <Trash2 className="h-4 w-4" />
-          <span>Delete</span>
-        </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your poem and remove it from our servers.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleDelete} className="bg-red-500 hover:bg-red-600" disabled={isDeleting}>
-            {isDeleting ? "Deleting..." : "Delete"}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <Button variant="destructive" onClick={() => setShowConfirm(true)}>
+      Delete Poem
+    </Button>
   )
 }

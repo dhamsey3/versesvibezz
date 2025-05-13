@@ -1,38 +1,35 @@
 import Link from "next/link"
-import { ArrowRight } from "lucide-react"
-
-import { Button } from "@/components/ui/button"
+import { getPoems } from "@/lib/actions"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
-import { getPoems } from "@/lib/actions"
+import { PoemCard } from "@/components/poem-card"
+import { Button } from "@/components/ui/button"
 
 export default async function Home() {
-  // Fetch poems from the database
   const poems = await getPoems()
+  const recentPoems = poems.slice(0, 6)
 
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-background">
           <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center space-y-4 text-center">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
-                  VersesVibez
+                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl">
+                  Welcome to VersesVibez
                 </h1>
                 <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
-                  Where words dance and emotions flow. A sanctuary for poetry lovers and creative souls.
+                  A community for poets and poetry lovers to share and discover beautiful verses.
                 </p>
               </div>
               <div className="space-x-4">
                 <Link href="/poems">
-                  <Button className="gap-1">
-                    Explore Poems <ArrowRight className="h-4 w-4" />
-                  </Button>
+                  <Button>Explore Poems</Button>
                 </Link>
-                <Link href="/about">
-                  <Button variant="outline">About</Button>
+                <Link href="/poems/new">
+                  <Button variant="outline">Share Your Poem</Button>
                 </Link>
               </div>
             </div>
@@ -43,40 +40,42 @@ export default async function Home() {
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Recent Poems</h2>
-                <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-                  Explore our latest poetic creations.
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Recent Poems</h2>
+                <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
+                  Discover the latest poetic creations from our community.
                 </p>
               </div>
             </div>
-            <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-2">
-              {poems.slice(0, 4).map((poem) => (
-                <div
-                  key={poem.id}
-                  className="group relative overflow-hidden rounded-lg border p-6 shadow transition-all hover:shadow-md"
-                >
-                  <div className="flex flex-col space-y-2">
-                    <h3 className="text-2xl font-bold">{poem.title}</h3>
-                    <p className="whitespace-pre-line text-gray-500 dark:text-gray-400">{poem.excerpt}</p>
-                    <div className="pt-4">
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        By {poem.author?.username || "Unknown"} • {new Date(poem.created_at).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <Link href={`/poems/${poem.id}`} className="absolute inset-0" aria-label={`Read ${poem.title}`}>
-                      <span className="sr-only">Read poem</span>
-                    </Link>
-                  </div>
+            <div className="mx-auto grid max-w-5xl gap-6 py-12 lg:grid-cols-3 md:grid-cols-2">
+              {recentPoems.length > 0 ? (
+                recentPoems.map((poem) => (
+                  <PoemCard
+                    key={poem.id}
+                    id={poem.id}
+                    title={poem.title}
+                    excerpt={poem.excerpt}
+                    author={poem.author?.username || "Anonymous"}
+                    date={new Date(poem.created_at).toLocaleDateString()}
+                    likes={poem.likes}
+                    comments={0} // We'll implement this later
+                  />
+                ))
+              ) : (
+                <div className="col-span-full text-center">
+                  <p className="text-gray-500 dark:text-gray-400">No poems yet. Be the first to share one!</p>
+                  <Link href="/poems/new" className="mt-4 inline-block">
+                    <Button>Share Your Poem</Button>
+                  </Link>
                 </div>
-              ))}
+              )}
             </div>
-            <div className="flex justify-center">
-              <Link href="/poems">
-                <Button variant="outline" className="gap-1">
-                  View All Poems <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
+            {recentPoems.length > 0 && (
+              <div className="flex justify-center">
+                <Link href="/poems">
+                  <Button variant="outline">View All Poems</Button>
+                </Link>
+              </div>
+            )}
           </div>
         </section>
       </main>

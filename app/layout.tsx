@@ -1,20 +1,31 @@
 import type React from "react"
+import type { Metadata } from "next"
 import { Inter } from "next/font/google"
-
-import "@/app/globals.css"
+import "./globals.css"
+import { AuthProvider } from "@/lib/auth"
+import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin"] })
 
-export const metadata = {
-  title: "VersesVibez - Poetry Website & Blog",
-  description: "Where words dance and emotions flow. A sanctuary for poetry lovers and creative souls.",
+export const metadata: Metadata = {
+  title: "VersesVibez - Poetry Website",
+  description: "Share and discover beautiful poetry",
     generator: 'v0.dev'
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <AuthProvider>
+          {children}
+          <Toaster />
+        </AuthProvider>
+      </body>
     </html>
   )
 }

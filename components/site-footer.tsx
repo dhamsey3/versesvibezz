@@ -30,20 +30,6 @@ export function SiteFooter() {
             </nav>
           </div>
           <div className="grid gap-2">
-            <h3 className="text-sm font-medium">Follow</h3>
-            <nav className="grid gap-2 text-sm text-muted-foreground">
-              <Link href="#" className="hover:underline">
-                Twitter
-              </Link>
-              <Link href="#" className="hover:underline">
-                Instagram
-              </Link>
-              <Link href="#" className="hover:underline">
-                Facebook
-              </Link>
-            </nav>
-          </div>
-          <div className="grid gap-2">
             <h3 className="text-sm font-medium">Legal</h3>
             <nav className="grid gap-2 text-sm text-muted-foreground">
               <Link href="#" className="hover:underline">

@@ -2,9 +2,9 @@
 
 import type React from "react"
 
+import { createContext, useContext, useEffect, useState } from "react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useRouter } from "next/navigation"
-import { createContext, useContext, useEffect, useState } from "react"
 
 export type User = {
   id: string

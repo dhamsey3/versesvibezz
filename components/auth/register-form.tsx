@@ -5,13 +5,10 @@ import type React from "react"
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { MailIcon, LockIcon, UserIcon, Loader2 } from "lucide-react"
-
+import { useAuth } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useAuth } from "@/lib/auth"
-import { toast } from "@/components/ui/use-toast"
+import { useToast } from "@/components/ui/use-toast"
 
 export function RegisterForm() {
   const [email, setEmail] = useState("")
@@ -20,6 +17,7 @@ export function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false)
   const { signUp } = useAuth()
   const router = useRouter()
+  const { toast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -61,58 +59,39 @@ export function RegisterForm() {
       </div>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="username">Username</Label>
-          <div className="relative">
-            <UserIcon className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-            <Input
-              id="username"
-              placeholder="poeticlover"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="pl-10"
-              required
-            />
-          </div>
+          <label htmlFor="username">Username</label>
+          <Input
+            id="username"
+            placeholder="poeticlover"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <div className="relative">
-            <MailIcon className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-            <Input
-              id="email"
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="pl-10"
-              required
-            />
-          </div>
+          <label htmlFor="email">Email</label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <div className="relative">
-            <LockIcon className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="pl-10"
-              required
-            />
-          </div>
+          <label htmlFor="password">Password</label>
+          <Input
+            id="password"
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
         </div>
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Creating account...
-            </>
-          ) : (
-            "Register"
-          )}
+          {isLoading ? "Creating account..." : "Register"}
         </Button>
       </form>
       <div className="text-center text-sm">

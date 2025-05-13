@@ -4,106 +4,80 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { createPoem, updatePoem } from "@/lib/actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { toast } from "@/components/ui/use-toast"
-import { createPoem, updatePoem } from "@/lib/actions"
-import type { Poem } from "@/lib/types"
+import { useToast } from "@/components/ui/use-toast"
 
-interface PoemFormProps {
+type PoemFormProps = {
   mode: "create" | "edit"
-  poem?: Poem
+  userId: string
+  poem?: {
+    id: string
+    title: string
+    content: string
+    category: string
+  }
 }
 
-const CATEGORIES = [
-  "Nature",
-  "Love",
-  "Life",
-  "Death",
-  "Seasons",
-  "Urban",
-  "Reflective",
-  "Celestial",
-  "Weather",
-  "Other",
-]
+const CATEGORIES = ["Nature", "Love", "Life", "Reflective", "Other"]
 
-export function PoemForm({ mode, poem }: PoemFormProps) {
-  const router = useRouter()
+export function PoemForm({ mode, userId, poem }: PoemFormProps) {
+  const [title, setTitle] = useState(poem?.title || "")
+  const [content, setContent] = useState(poem?.content || "")
+  const [category, setCategory] = useState(poem?.category || "Nature")
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [formData, setFormData] = useState({
-    title: poem?.title || "",
-    content: poem?.content || "",
-    excerpt: poem?.excerpt || "",
-    category: poem?.category || "Nature",
-  })
-
-  // For now, we'll use a dummy user ID since we haven't implemented authentication yet
-  const dummyUserId = "d9a1fc2e-d7a9-4c41-9f1a-318c6a8a292a" // Aria Nightshade
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const router = useRouter()
+  const { toast } = useToast()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
 
+    const formData = new FormData()
+    formData.append("title", title)
+    formData.append("content", content)
+    formData.append("category", category)
+    formData.append("authorId", userId)
+
     try {
       if (mode === "create") {
-        const result = await createPoem(
-          formData.title,
-          formData.content,
-          formData.excerpt,
-          formData.category,
-          dummyUserId,
-        )
-
-        if (result) {
+        const result = await createPoem(formData)
+        if (result.success) {
           toast({
-            title: "Success!",
-            description: "Your poem has been published.",
+            title: "Success",
+            description: "Poem created successfully",
           })
-          router.push(`/poems/${result.id}`)
+          router.push(`/poems/${result.poem.id}`)
         } else {
           toast({
             title: "Error",
-            description: "Failed to publish your poem. Please try again.",
+            description: result.error || "Failed to create poem",
             variant: "destructive",
           })
         }
       } else if (mode === "edit" && poem) {
-        const result = await updatePoem(
-          poem.id,
-          formData.title,
-          formData.content,
-          formData.excerpt,
-          formData.category,
-          dummyUserId,
-        )
-
+        formData.append("id", poem.id)
+        const result = await updatePoem(formData)
         if (result.success) {
           toast({
-            title: "Success!",
-            description: "Your poem has been updated.",
+            title: "Success",
+            description: "Poem updated successfully",
           })
           router.push(`/poems/${poem.id}`)
         } else {
           toast({
             title: "Error",
-            description: result.message || "Failed to update your poem. Please try again.",
+            description: result.error || "Failed to update poem",
             variant: "destructive",
           })
         }
       }
-    } catch (error) {
-      console.error("Error submitting poem:", error)
+    } catch (err) {
       toast({
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        description: "An unexpected error occurred",
         variant: "destructive",
       })
     } finally {
@@ -112,78 +86,56 @@ export function PoemForm({ mode, poem }: PoemFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="title">Title</Label>
-        <Input
-          id="title"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          placeholder="Enter the title of your poem"
-          required
-        />
+        <label htmlFor="title" className="text-sm font-medium">
+          Title
+        </label>
+        <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="content">Content</Label>
+        <label htmlFor="content" className="text-sm font-medium">
+          Content
+        </label>
         <Textarea
           id="content"
-          name="content"
-          value={formData.content}
-          onChange={handleChange}
-          placeholder="Write your poem here..."
-          className="min-h-[300px]"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          className="min-h-[200px]"
           required
         />
-        <p className="text-sm text-muted-foreground">
-          Use line breaks to format your poem. The content will be displayed exactly as entered.
-        </p>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="excerpt">Excerpt (Optional)</Label>
-        <Textarea
-          id="excerpt"
-          name="excerpt"
-          value={formData.excerpt}
-          onChange={handleChange}
-          placeholder="A short excerpt or preview of your poem (if left empty, the first few lines will be used)"
-          className="min-h-[100px]"
-        />
-        <p className="text-sm text-muted-foreground">
-          This will be displayed in poem listings. If left empty, the first few lines of your poem will be used.
-        </p>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="category">Category</Label>
+        <label htmlFor="category" className="text-sm font-medium">
+          Category
+        </label>
         <select
           id="category"
-          name="category"
-          value={formData.category}
-          onChange={handleChange}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
         >
-          {CATEGORIES.map((category) => (
-            <option key={category} value={category}>
-              {category}
+          {CATEGORIES.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
             </option>
           ))}
         </select>
       </div>
 
-      <div className="flex justify-end space-x-2">
-        <Button type="button" variant="outline" onClick={() => router.back()} disabled={isSubmitting}>
+      <div className="flex justify-end gap-2">
+        <Button type="button" variant="outline" onClick={() => router.back()}>
           Cancel
         </Button>
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting
             ? mode === "create"
-              ? "Publishing..."
+              ? "Creating..."
               : "Updating..."
             : mode === "create"
-              ? "Publish Poem"
+              ? "Create Poem"
               : "Update Poem"}
         </Button>
       </div>

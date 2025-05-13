@@ -1,9 +1,6 @@
 import Link from "next/link"
-import { BookOpen, Menu } from "lucide-react"
-
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { ModeToggle } from "@/components/mode-toggle"
+import { BookOpen } from "lucide-react"
+import { UserProfile } from "@/components/user-profile"
 
 export function SiteHeader() {
   return (
@@ -28,31 +25,7 @@ export function SiteHeader() {
           </Link>
         </nav>
         <div className="flex flex-1 items-center justify-end gap-2">
-          <ModeToggle />
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="md:hidden">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right">
-              <nav className="grid gap-6 text-lg font-medium">
-                <Link href="/" className="hover:text-primary">
-                  Home
-                </Link>
-                <Link href="/poems" className="hover:text-primary">
-                  Poems
-                </Link>
-                <Link href="/about" className="hover:text-primary">
-                  About
-                </Link>
-                <Link href="/contact" className="hover:text-primary">
-                  Contact
-                </Link>
-              </nav>
-            </SheetContent>
-          </Sheet>
+          <UserProfile />
         </div>
       </div>
     </header>
