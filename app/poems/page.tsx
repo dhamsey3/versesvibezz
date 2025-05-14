@@ -12,8 +12,8 @@ export default async function PoemsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {poems.map((poem) => (
-          <Link key={poem._id} href={`/poems/${poem.slug.current}`} className="group">
-            <div className="overflow-hidden rounded-lg bg-gray-100 transition-all hover:shadow-md h-full">
+          <div key={poem._id} className="overflow-hidden rounded-lg bg-gray-100 transition-all hover:shadow-md h-full">
+            <Link href={`/poems/${poem.slug.current}`} className="block">
               <div className="relative h-48 w-full">
                 {poem.coverImage ? (
                   <Image
@@ -30,15 +30,18 @@ export default async function PoemsPage() {
               </div>
               <div className="p-4">
                 <h2 className="text-xl font-semibold">{poem.title}</h2>
-                <p className="text-sm text-gray-600 mt-1">
-                  <Link href={`/poets/${poem.poetSlug}`} className="hover:underline">
-                    {poem.poet}
-                  </Link>
-                </p>
+                {/* Don't wrap this in a Link since we're already inside a Link */}
+                <p className="text-sm text-gray-600 mt-1">By: {poem.poet}</p>
                 {poem.year && <p className="text-sm text-gray-500 mt-1">{poem.year}</p>}
               </div>
+            </Link>
+            {/* Add a separate section for the poet link outside the main Link */}
+            <div className="px-4 pb-4">
+              <Link href={`/poets/${poem.poetSlug}`} className="text-sm text-blue-600 hover:underline">
+                View poet profile
+              </Link>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
     </div>

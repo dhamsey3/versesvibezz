@@ -1,27 +1,36 @@
 import { type NextRequest, NextResponse } from "next/server"
 
 export function middleware(request: NextRequest) {
-  const response = NextResponse.next()
-
-  // Only add CSP headers for studio routes
+  // Only apply to /studio routes
   if (request.nextUrl.pathname.startsWith("/studio")) {
-    // Add CSP headers specifically for Sanity Studio
-    response.headers.set(
-      "Content-Security-Policy",
-      `default-src 'self';
-      script-src 'self' 'unsafe-eval' 'unsafe-inline' https://cdn.sanity.io;
-      style-src 'self' 'unsafe-inline' https://cdn.sanity.io;
-      img-src 'self' data: https://cdn.sanity.io;
-      font-src 'self' data:;
-      connect-src 'self' https://*.sanity.io https://api.sanity.io;
-      frame-src 'self';`,
-    )
+    // Get the authorization header
+    const basicAuth = request.headers.get("authorization")
+
+    // Check if authentication exists and is valid
+    if (basicAuth) {
+      const authValue = basicAuth.split(" ")[1]
+      const [user, pwd] = atob(authValue).split(":")
+
+      // Replace with your desired username and password
+      if (user === "admin" && pwd === "your-secure-password") {
+        return NextResponse.next()
+      }
+    }
+
+    // For security, don't indicate that this is a studio or CMS
+    // Just return a generic 404 response to make it appear the page doesn't exist
+    return new NextResponse("Page not found", {
+      status: 404,
+      headers: {
+        "WWW-Authenticate": 'Basic realm="Secure Area"',
+        "Content-Type": "text/plain",
+      },
+    })
   }
 
-  return response
+  return NextResponse.next()
 }
 
-// Only run middleware on studio routes
 export const config = {
   matcher: "/studio/:path*",
 }

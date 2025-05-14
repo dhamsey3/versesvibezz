@@ -77,30 +77,40 @@ export async function getFeaturedPoems() {
 
 // Fetch a single poem by slug
 export async function getPoem(slug: string) {
-  return client.fetch(
-    `*[_type == "poem" && slug.current == $slug][0] {
-      _id,
-      title,
-      slug,
-      "poet": poet->{
-        name,
-        slug
-      },
-      "collection": collection->{
-        title,
-        slug
-      },
-      "coverImage": coverImage.asset->url,
-      content,
-      year,
-      "themes": themes[]-> {
+  try {
+    const poem = await client.fetch(
+      `*[_type == "poem" && slug.current == $slug][0] {
         _id,
-        name,
-        slug
-      }
-    }`,
-    { slug },
-  )
+        title,
+        slug,
+        "poet": poet->{
+          _id,
+          name,
+          slug
+        },
+        "collection": collection->{
+          _id,
+          title,
+          slug
+        },
+        "coverImage": coverImage.asset->url,
+        content,
+        year,
+        "themes": themes[]-> {
+          _id,
+          name,
+          slug
+        }
+      }`,
+      { slug },
+    )
+
+    console.log("Fetched poem data:", JSON.stringify(poem, null, 2))
+    return poem
+  } catch (error) {
+    console.error("Error fetching poem:", error)
+    return null
+  }
 }
 
 // Fetch all collections

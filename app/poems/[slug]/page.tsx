@@ -7,8 +7,19 @@ import Link from "next/link"
 export default async function PoemPage({ params }: { params: { slug: string } }) {
   const poem = await getPoem(params.slug)
 
+  // Add debugging to see what's being returned
+  console.log("Poem data:", JSON.stringify(poem, null, 2))
+
   if (!poem) {
-    return <div>Poem not found</div>
+    return (
+      <div className="container mx-auto py-10 px-4">
+        <h1 className="text-3xl font-bold mb-4">Poem Not Found</h1>
+        <p>Sorry, we couldn't find the poem you're looking for.</p>
+        <Link href="/poems" className="text-blue-600 hover:underline mt-4 inline-block">
+          Back to all poems
+        </Link>
+      </div>
+    )
   }
 
   return (
@@ -18,9 +29,13 @@ export default async function PoemPage({ params }: { params: { slug: string } })
           <h1 className="text-3xl font-bold mb-2">{poem.title}</h1>
           <p className="text-gray-600">
             By{" "}
-            <Link href={`/poets/${poem.poet.slug.current}`} className="hover:underline">
-              {poem.poet.name}
-            </Link>
+            {poem.poet ? (
+              <Link href={`/poets/${poem.poet.slug.current}`} className="hover:underline">
+                {poem.poet.name}
+              </Link>
+            ) : (
+              <span>Unknown Poet</span>
+            )}
             {poem.year && <span> • {poem.year}</span>}
           </p>
           {poem.collection && (
@@ -44,9 +59,25 @@ export default async function PoemPage({ params }: { params: { slug: string } })
           </div>
         )}
 
-        <div className="prose max-w-none">
-          <PortableText value={poem.content} />
-        </div>
+        {/* Check if content exists and handle empty content */}
+        {poem.content ? (
+          <div className="prose max-w-none">
+            <PortableText
+              value={poem.content}
+              components={{
+                // Add custom components for the PortableText renderer
+                block: {
+                  // Special handling for verse style
+                  verse: ({ children }) => <p className="whitespace-pre-wrap font-serif">{children}</p>,
+                },
+              }}
+            />
+          </div>
+        ) : (
+          <div className="prose max-w-none">
+            <p className="text-gray-500 italic">No content available for this poem.</p>
+          </div>
+        )}
 
         {poem.themes && poem.themes.length > 0 && (
           <div className="mt-8">
