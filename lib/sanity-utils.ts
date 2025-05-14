@@ -76,9 +76,16 @@ export async function getFeaturedPoems() {
   )
 }
 
-// Fetch a single poem by slug
+// Fetch a single poem by slug with better error handling
 export async function getPoem(slug: string) {
+  if (!slug) {
+    console.error("No slug provided to getPoem function")
+    return null
+  }
+
   try {
+    console.log(`Fetching poem with slug: ${slug}`)
+
     const poem = await client.fetch(
       `*[_type == "poem" && slug.current == $slug][0] {
         _id,
@@ -94,7 +101,7 @@ export async function getPoem(slug: string) {
           title,
           slug
         },
-        "coverImage": coverImage.asset->url,
+        "coverImage": coverImage,
         content,
         year,
         "themes": themes[]-> {
@@ -106,11 +113,16 @@ export async function getPoem(slug: string) {
       { slug },
     )
 
+    if (!poem) {
+      console.log(`No poem found with slug: ${slug}`)
+      return null
+    }
+
     console.log("Fetched poem data:", JSON.stringify(poem, null, 2))
     return poem
   } catch (error) {
-    console.error("Error fetching poem:", error)
-    return null
+    console.error(`Error fetching poem with slug ${slug}:`, error)
+    throw new Error(`Failed to fetch poem: ${error instanceof Error ? error.message : String(error)}`)
   }
 }
 

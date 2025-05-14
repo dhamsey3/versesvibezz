@@ -41,7 +41,6 @@ export default function StudioPage() {
       <NextStudio
         config={config}
         unstable_globalStyles={true}
-        unstable_noAuthBoundary={true}
         onError={(error) => {
           console.error("Sanity Studio error:", error)
           setError(error)

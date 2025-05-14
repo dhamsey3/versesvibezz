@@ -3,20 +3,24 @@ import { getPoemImageUrl } from "@/lib/image-utils"
 import { PortableText } from "@portabletext/react"
 import SanityImage from "@/components/sanity-image"
 import Link from "next/link"
+import { notFound } from "next/navigation"
 
 export default async function PoemPage({ params }: { params: { slug: string } }) {
-  const poem = await getPoem(params.slug)
+  // Add error handling for the data fetching
+  let poem
+  try {
+    poem = await getPoem(params.slug)
 
-  if (!poem) {
-    return (
-      <div className="container mx-auto py-10 px-4">
-        <h1 className="text-3xl font-bold mb-4">Poem Not Found</h1>
-        <p>Sorry, we couldn't find the poem you're looking for.</p>
-        <Link href="/poems" className="text-blue-600 hover:underline mt-4 inline-block">
-          Back to all poems
-        </Link>
-      </div>
-    )
+    // Log the poem data for debugging
+    console.log("Fetched poem data:", JSON.stringify(poem, null, 2))
+
+    if (!poem) {
+      console.error(`Poem not found for slug: ${params.slug}`)
+      notFound()
+    }
+  } catch (error) {
+    console.error(`Error fetching poem with slug ${params.slug}:`, error)
+    throw new Error(`Failed to load poem: ${error instanceof Error ? error.message : String(error)}`)
   }
 
   return (
@@ -88,7 +92,7 @@ export default async function PoemPage({ params }: { params: { slug: string } })
             <div className="h-px bg-gray-300 w-1/3"></div>
           </div>
 
-          {/* Poem content */}
+          {/* Poem content with better error handling */}
           {poem.content ? (
             <div className="prose max-w-none font-serif">
               <PortableText
