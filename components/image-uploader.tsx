@@ -1,9 +1,8 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
-import { client } from "@/lib/sanity-client"
+import { clientSafe } from "@/lib/sanity-client-safe"
 
 export default function ImageUploader() {
   const [file, setFile] = useState<File | null>(null)
@@ -30,7 +29,7 @@ export default function ImageUploader() {
 
     try {
       // Create a new asset document from the file
-      const asset = await client.assets.upload("image", file, {
+      const asset = await clientSafe.assets.upload("image", file, {
         filename: file.name,
       })
 

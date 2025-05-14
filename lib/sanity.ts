@@ -1,14 +1,15 @@
 import { createClient } from "next-sanity"
 import imageUrlBuilder from "@sanity/image-url"
 
-// Your Sanity project ID
+// Hardcode the project ID to ensure it's always available
 const projectId = "5npbo3eo"
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production"
+const apiVersion = "2023-05-03"
 
 export const client = createClient({
   projectId,
   dataset,
-  apiVersion: "2023-05-03", // Use the latest API version
+  apiVersion,
   useCdn: process.env.NODE_ENV === "production",
 })
 

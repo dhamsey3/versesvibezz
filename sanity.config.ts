@@ -3,7 +3,7 @@ import { structureTool } from "sanity/structure"
 import { visionTool } from "@sanity/vision"
 import { schemaTypes } from "./schemas"
 
-// Your Sanity project ID
+// Hardcode the project ID to ensure it's always available
 const projectId = "5npbo3eo"
 const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production"
 
