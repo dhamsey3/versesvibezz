@@ -1,8 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server"
 
 export function middleware(request: NextRequest) {
-  // Only apply to /studio routes
-  if (request.nextUrl.pathname.startsWith("/studio")) {
+  // Apply to studio and admin routes
+  if (
+    request.nextUrl.pathname.startsWith("/studio") ||
+    request.nextUrl.pathname.startsWith("/admin-") ||
+    request.nextUrl.pathname === "/admin-images"
+  ) {
     // Get the authorization header
     const basicAuth = request.headers.get("authorization")
 
@@ -32,5 +36,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/studio/:path*",
+  matcher: ["/studio/:path*", "/admin-cms-:path*", "/admin-images"],
 }

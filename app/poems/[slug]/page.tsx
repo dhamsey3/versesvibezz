@@ -1,14 +1,11 @@
 import { getPoem } from "@/lib/sanity-utils"
-import { urlFor } from "@/lib/sanity"
+import { getPoemImageUrl, getThemedBackgroundImage } from "@/lib/image-utils"
 import { PortableText } from "@portabletext/react"
 import Image from "next/image"
 import Link from "next/link"
 
 export default async function PoemPage({ params }: { params: { slug: string } }) {
   const poem = await getPoem(params.slug)
-
-  // Add debugging to see what's being returned
-  console.log("Poem data:", JSON.stringify(poem, null, 2))
 
   if (!poem) {
     return (
@@ -22,75 +19,134 @@ export default async function PoemPage({ params }: { params: { slug: string } })
     )
   }
 
+  // Get appropriate images
+  const coverImageUrl = getPoemImageUrl(poem.coverImage)
+  const backgroundImageUrl = getThemedBackgroundImage(poem.themes)
+
   return (
-    <div className="container mx-auto py-10 px-4">
-      <div className="max-w-3xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">{poem.title}</h1>
-          <p className="text-gray-600">
-            By{" "}
-            {poem.poet ? (
-              <Link href={`/poets/${poem.poet.slug.current}`} className="hover:underline">
-                {poem.poet.name}
-              </Link>
-            ) : (
-              <span>Unknown Poet</span>
-            )}
-            {poem.year && <span> • {poem.year}</span>}
-          </p>
-          {poem.collection && (
-            <p className="text-sm text-gray-500 mt-1">
-              From the collection:{" "}
-              <Link href={`/collections/${poem.collection.slug.current}`} className="hover:underline">
-                {poem.collection.title}
-              </Link>
+    <div
+      className="min-h-screen bg-cover bg-center bg-fixed"
+      style={{
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95)), url(${backgroundImageUrl})`,
+      }}
+    >
+      <div className="container mx-auto py-10 px-4">
+        <div className="max-w-3xl mx-auto bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-8">
+          <div className="mb-8">
+            <h1 className="text-4xl font-serif font-bold mb-3">{poem.title}</h1>
+            <p className="text-gray-600 italic">
+              By{" "}
+              {poem.poet ? (
+                <Link href={`/poets/${poem.poet.slug.current}`} className="hover:underline">
+                  {poem.poet.name}
+                </Link>
+              ) : (
+                <span>Unknown Poet</span>
+              )}
+              {poem.year && <span> • {poem.year}</span>}
             </p>
+            {poem.collection && (
+              <p className="text-sm text-gray-500 mt-1">
+                From the collection:{" "}
+                <Link href={`/collections/${poem.collection.slug.current}`} className="hover:underline">
+                  {poem.collection.title}
+                </Link>
+              </p>
+            )}
+          </div>
+
+          <div className="mb-10 relative h-64 w-full md:h-96 rounded-lg overflow-hidden shadow-lg">
+            <Image src={coverImageUrl || "/placeholder.svg"} alt={poem.title} fill className="object-cover" priority />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+          </div>
+
+          {/* Decorative divider */}
+          <div className="flex items-center justify-center my-8">
+            <div className="h-px bg-gray-300 w-1/3"></div>
+            <div className="mx-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-gray-400"
+              >
+                <path d="M7 20h10"></path>
+                <path d="M10 20v-4a2 2 0 1 1 4 0v4"></path>
+                <path d="M8 15h8"></path>
+                <path d="M12 12V4"></path>
+              </svg>
+            </div>
+            <div className="h-px bg-gray-300 w-1/3"></div>
+          </div>
+
+          {/* Poem content */}
+          {poem.content ? (
+            <div className="prose max-w-none font-serif">
+              <PortableText
+                value={poem.content}
+                components={{
+                  block: {
+                    normal: ({ children }) => <p className="my-4">{children}</p>,
+                    verse: ({ children }) => <p className="whitespace-pre-wrap my-4 italic">{children}</p>,
+                    h2: ({ children }) => <h2 className="text-2xl font-semibold mt-8 mb-4">{children}</h2>,
+                    h3: ({ children }) => <h3 className="text-xl font-semibold mt-6 mb-3">{children}</h3>,
+                  },
+                }}
+              />
+            </div>
+          ) : (
+            <div className="prose max-w-none">
+              <p className="text-gray-500 italic">No content available for this poem.</p>
+            </div>
+          )}
+
+          {/* Decorative divider */}
+          <div className="flex items-center justify-center my-8">
+            <div className="h-px bg-gray-300 w-1/3"></div>
+            <div className="mx-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-gray-400"
+              >
+                <path d="M7 20h10"></path>
+                <path d="M10 20v-4a2 2 0 1 1 4 0v4"></path>
+                <path d="M8 15h8"></path>
+                <path d="M12 12V4"></path>
+              </svg>
+            </div>
+            <div className="h-px bg-gray-300 w-1/3"></div>
+          </div>
+
+          {/* Themes */}
+          {poem.themes && poem.themes.length > 0 && (
+            <div className="mt-8">
+              <h3 className="text-lg font-semibold mb-2">Themes</h3>
+              <div className="flex flex-wrap gap-2">
+                {poem.themes.map((theme) => (
+                  <Link key={theme._id} href={`/themes/${theme.slug.current}`}>
+                    <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm hover:bg-purple-200 transition-colors">
+                      {theme.name}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
           )}
         </div>
-
-        {poem.coverImage && (
-          <div className="mb-8 relative h-64 w-full md:h-96">
-            <Image
-              src={urlFor(poem.coverImage).url() || "/placeholder.svg?height=400&width=800&query=poem"}
-              alt={poem.title}
-              fill
-              className="object-cover rounded-lg"
-            />
-          </div>
-        )}
-
-        {/* Check if content exists and handle empty content */}
-        {poem.content ? (
-          <div className="prose max-w-none">
-            <PortableText
-              value={poem.content}
-              components={{
-                // Add custom components for the PortableText renderer
-                block: {
-                  // Special handling for verse style
-                  verse: ({ children }) => <p className="whitespace-pre-wrap font-serif">{children}</p>,
-                },
-              }}
-            />
-          </div>
-        ) : (
-          <div className="prose max-w-none">
-            <p className="text-gray-500 italic">No content available for this poem.</p>
-          </div>
-        )}
-
-        {poem.themes && poem.themes.length > 0 && (
-          <div className="mt-8">
-            <h3 className="text-lg font-semibold mb-2">Themes</h3>
-            <div className="flex flex-wrap gap-2">
-              {poem.themes.map((theme) => (
-                <Link key={theme._id} href={`/themes/${theme.slug.current}`}>
-                  <span className="px-3 py-1 bg-gray-100 rounded-full text-sm hover:bg-gray-200">{theme.name}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   )

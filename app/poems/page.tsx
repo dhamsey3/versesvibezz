@@ -1,5 +1,5 @@
 import { getPoems } from "@/lib/sanity-utils"
-import { urlFor } from "@/lib/sanity"
+import { getPoemImageUrl } from "@/lib/image-utils"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -7,42 +7,51 @@ export default async function PoemsPage() {
   const poems = await getPoems()
 
   return (
-    <div className="container mx-auto py-10 px-4">
-      <h1 className="text-3xl font-bold mb-8">Poems</h1>
+    <div
+      className="min-h-screen bg-cover bg-center bg-fixed"
+      style={{
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95)), url(/images/poetry-bg-1.jpg)`,
+      }}
+    >
+      <div className="container mx-auto py-10 px-4">
+        <h1 className="text-4xl font-serif font-bold mb-2 text-center">Poems</h1>
+        <p className="text-gray-600 text-center mb-10 max-w-2xl mx-auto">
+          Explore our collection of beautiful poetry from various poets and traditions.
+        </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {poems.map((poem) => (
-          <div key={poem._id} className="overflow-hidden rounded-lg bg-gray-100 transition-all hover:shadow-md h-full">
-            <Link href={`/poems/${poem.slug.current}`} className="block">
-              <div className="relative h-48 w-full">
-                {poem.coverImage ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {poems.map((poem) => (
+            <div
+              key={poem._id}
+              className="overflow-hidden rounded-lg bg-white shadow-lg transition-all hover:shadow-xl h-full"
+            >
+              <Link href={`/poems/${poem.slug.current}`} className="block">
+                <div className="relative h-56 w-full">
                   <Image
-                    src={urlFor(poem.coverImage).url() || "/placeholder.svg?height=300&width=500&query=poem"}
+                    src={getPoemImageUrl(poem.coverImage) || "/placeholder.svg"}
                     alt={poem.title}
                     fill
-                    className="object-cover transition-transform group-hover:scale-105"
+                    className="object-cover transition-transform hover:scale-105 duration-500"
                   />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-gray-200">
-                    <span className="text-gray-500">No image</span>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  <div className="absolute bottom-0 left-0 p-4 text-white">
+                    <h2 className="text-xl font-serif font-semibold">{poem.title}</h2>
+                    <p className="text-sm text-gray-200 mt-1">By {poem.poet}</p>
                   </div>
-                )}
-              </div>
-              <div className="p-4">
-                <h2 className="text-xl font-semibold">{poem.title}</h2>
-                {/* Don't wrap this in a Link since we're already inside a Link */}
-                <p className="text-sm text-gray-600 mt-1">By: {poem.poet}</p>
-                {poem.year && <p className="text-sm text-gray-500 mt-1">{poem.year}</p>}
-              </div>
-            </Link>
-            {/* Add a separate section for the poet link outside the main Link */}
-            <div className="px-4 pb-4">
-              <Link href={`/poets/${poem.poetSlug}`} className="text-sm text-blue-600 hover:underline">
-                View poet profile
+                </div>
               </Link>
+              <div className="p-4">
+                {poem.year && <p className="text-sm text-gray-500 mb-2">{poem.year}</p>}
+                <Link
+                  href={`/poems/${poem.slug.current}`}
+                  className="inline-block mt-2 px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-sm hover:bg-purple-200 transition-colors"
+                >
+                  Read poem
+                </Link>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   )

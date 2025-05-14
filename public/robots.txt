@@ -1,3 +1,6 @@
 User-agent: *
 Disallow: /studio/
 Disallow: /admin-cms-*/
+Disallow: /debug-sanity/
+Disallow: /test-sanity/
+Disallow: /test-poem/

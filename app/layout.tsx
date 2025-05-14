@@ -2,6 +2,8 @@ import type React from "react"
 import "./globals.css"
 import { Inter } from "next/font/google"
 import SiteHeader from "@/components/site-header"
+import SiteFooter from "@/components/site-footer"
+import HiddenAdminLink from "@/components/hidden-admin-link"
 import { ThemeProvider } from "@/components/theme-provider"
 
 const inter = Inter({ subsets: ["latin"] })
@@ -21,8 +23,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <SiteHeader />
-          {children}
+          <div className="flex flex-col min-h-screen">
+            <SiteHeader />
+            <main className="flex-grow">{children}</main>
+            <SiteFooter />
+            <HiddenAdminLink />
+          </div>
         </ThemeProvider>
       </body>
     </html>
