@@ -1,7 +1,7 @@
 import { client } from "@/lib/sanity"
 import { urlFor } from "@/lib/sanity"
-import Image from "next/image"
 import Link from "next/link"
+import DebugImage from "@/components/debug-image"
 
 export default async function DebugImagesPage() {
   // Fetch a sample poem to test image rendering
@@ -70,13 +70,7 @@ export default async function DebugImagesPage() {
 
                   {imageUrl && (
                     <div className="relative h-64 w-full rounded overflow-hidden">
-                      <Image
-                        src={imageUrl || "/placeholder.svg"}
-                        alt={poem.title || "Poem image"}
-                        fill
-                        className="object-cover"
-                        onError={() => console.error("Image failed to load:", imageUrl)}
-                      />
+                      <DebugImage src={imageUrl} alt={poem.title || "Poem image"} fill className="object-cover" />
                     </div>
                   )}
                 </div>
@@ -106,13 +100,7 @@ export default async function DebugImagesPage() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {defaultImages.map((src, index) => (
             <div key={index} className="relative h-40 rounded overflow-hidden">
-              <Image
-                src={src || "/placeholder.svg"}
-                alt={`Default image ${index + 1}`}
-                fill
-                className="object-cover"
-                onError={() => console.error("Default image failed to load:", src)}
-              />
+              <DebugImage src={src} alt={`Default image ${index + 1}`} fill className="object-cover" />
               <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-1">
                 {src.split("/").pop()}
               </div>
@@ -125,7 +113,7 @@ export default async function DebugImagesPage() {
         <h2 className="text-xl font-semibold mb-4">Placeholder Test</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="relative h-40 rounded overflow-hidden">
-            <Image src="/test-image.png" alt="Placeholder test" fill className="object-cover" />
+            <DebugImage src="/test-image.png" alt="Placeholder test" fill className="object-cover" />
           </div>
         </div>
       </div>
