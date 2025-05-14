@@ -40,6 +40,11 @@ export function getPoemImageUrl(coverImage: any): string {
 export function getPoetImageUrl(image: any): string {
   if (image) {
     try {
+      // Handle both direct URLs and Sanity image references
+      if (typeof image === "string") {
+        return image
+      }
+
       const imageUrl = urlFor(image).url()
       console.log("Generated poet image URL:", imageUrl)
       return imageUrl

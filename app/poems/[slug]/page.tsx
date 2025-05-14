@@ -37,7 +37,7 @@ export default async function PoemPage({ params }: { params: { slug: string } })
             <p className="text-gray-600 italic">
               By{" "}
               {poem.poet ? (
-                <Link href={`/poets/${poem.poet.slug.current}`} className="hover:underline">
+                <Link href={`/poets/${poem.poet.slug.current}`} className="hover:underline text-purple-700">
                   {poem.poet.name}
                 </Link>
               ) : (
@@ -137,6 +137,33 @@ export default async function PoemPage({ params }: { params: { slug: string } })
             </div>
             <div className="h-px bg-gray-300 w-1/3"></div>
           </div>
+
+          {/* About the poet section */}
+          {poem.poet && (
+            <div className="mt-8 p-6 bg-purple-50 rounded-lg">
+              <h3 className="text-lg font-semibold mb-3">About the Poet</h3>
+              <div className="flex items-center">
+                <Link href={`/poets/${poem.poet.slug.current}`} className="flex items-center group">
+                  <span className="font-medium group-hover:text-purple-700 transition-colors">{poem.poet.name}</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="ml-1 text-purple-700"
+                  >
+                    <path d="M5 12h14"></path>
+                    <path d="M12 5l7 7-7 7"></path>
+                  </svg>
+                </Link>
+              </div>
+            </div>
+          )}
 
           {/* Themes */}
           {poem.themes && poem.themes.length > 0 && (

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { urlFor } from "@/lib/sanity"
 
@@ -27,18 +27,39 @@ export default function SanityImage({
 }: SanityImageProps) {
   const [isError, setIsError] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [imageUrl, setImageUrl] = useState<string>(fallbackImage)
 
-  // Generate image URL or use fallback
-  let imageUrl = fallbackImage
+  useEffect(() => {
+    // Reset states when image prop changes
+    setIsError(false)
+    setIsLoading(true)
 
-  try {
-    if (image && !isError) {
-      imageUrl = urlFor(image).url()
+    // Generate image URL or use fallback
+    if (image) {
+      try {
+        // Handle both direct URLs and Sanity image references
+        if (typeof image === "string") {
+          setImageUrl(image)
+        } else if (image._ref || (image.asset && image.asset._ref)) {
+          const url = urlFor(image).url()
+          if (url) {
+            setImageUrl(url)
+          } else {
+            console.error("Failed to generate URL from image reference:", image)
+            setIsError(true)
+          }
+        } else {
+          console.error("Unrecognized image format:", image)
+          setIsError(true)
+        }
+      } catch (error) {
+        console.error("Error generating image URL:", error)
+        setIsError(true)
+      }
+    } else {
+      setIsError(true)
     }
-  } catch (error) {
-    console.error("Error generating image URL:", error)
-    setIsError(true)
-  }
+  }, [image, fallbackImage])
 
   // Handle image load error
   const handleError = () => {
@@ -52,11 +73,13 @@ export default function SanityImage({
     setIsLoading(false)
   }
 
+  const finalImageUrl = isError ? fallbackImage : imageUrl
+
   return (
     <>
       {fill ? (
         <Image
-          src={isError ? fallbackImage : imageUrl}
+          src={finalImageUrl || "/placeholder.svg"}
           alt={alt}
           fill
           className={`${className} ${isLoading ? "animate-pulse bg-gray-200" : ""}`}
@@ -66,7 +89,7 @@ export default function SanityImage({
         />
       ) : (
         <Image
-          src={isError ? fallbackImage : imageUrl}
+          src={finalImageUrl || "/placeholder.svg"}
           alt={alt}
           width={width || 800}
           height={height || 600}

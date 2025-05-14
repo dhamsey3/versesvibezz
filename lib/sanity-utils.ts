@@ -1,44 +1,71 @@
 import { client } from "./sanity"
 
-// Fetch all poets
+// Fetch all poets with better error handling
 export async function getPoets() {
-  return client.fetch(
-    `*[_type == "poet"] {
-      _id,
-      name,
-      slug,
-      "image": image.asset->url,
-      biography,
-      birthDate,
-      deathDate,
-      styles
-    }`,
-  )
+  try {
+    console.log("Fetching all poets")
+    const poets = await client.fetch(
+      `*[_type == "poet"] {
+        _id,
+        name,
+        slug,
+        image,
+        biography,
+        birthDate,
+        deathDate,
+        styles
+      }`,
+    )
+    console.log(`Successfully fetched ${poets.length} poets`)
+    return poets
+  } catch (error) {
+    console.error("Error fetching poets:", error)
+    throw new Error(`Failed to fetch poets: ${error instanceof Error ? error.message : String(error)}`)
+  }
 }
 
-// Fetch a single poet by slug
+// Fetch a single poet by slug with better error handling
 export async function getPoet(slug: string) {
-  return client.fetch(
-    `*[_type == "poet" && slug.current == $slug][0] {
-      _id,
-      name,
-      slug,
-      "image": image.asset->url,
-      biography,
-      birthDate,
-      deathDate,
-      styles,
-      "poems": *[_type == "poem" && references(^._id)] {
+  if (!slug) {
+    console.error("No slug provided to getPoet function")
+    return null
+  }
+
+  try {
+    console.log(`Fetching poet with slug: ${slug}`)
+    const poet = await client.fetch(
+      `*[_type == "poet" && slug.current == $slug][0] {
         _id,
-        title,
+        name,
         slug,
-        "coverImage": coverImage.asset->url,
-        year,
-        featured
-      }
-    }`,
-    { slug },
-  )
+        image,
+        biography,
+        birthDate,
+        deathDate,
+        styles,
+        "poems": *[_type == "poem" && references(^._id)] {
+          _id,
+          title,
+          slug,
+          coverImage,
+          year,
+          featured
+        }
+      }`,
+      { slug },
+    )
+
+    if (!poet) {
+      console.log(`No poet found with slug: ${slug}`)
+      return null
+    }
+
+    console.log("Fetched poet data:", JSON.stringify(poet, null, 2))
+    return poet
+  } catch (error) {
+    console.error(`Error fetching poet with slug ${slug}:`, error)
+    throw new Error(`Failed to fetch poet: ${error instanceof Error ? error.message : String(error)}`)
+  }
 }
 
 // Fetch all poems
@@ -101,7 +128,7 @@ export async function getPoem(slug: string) {
           title,
           slug
         },
-        "coverImage": coverImage,
+        coverImage,
         content,
         year,
         "themes": themes[]-> {
