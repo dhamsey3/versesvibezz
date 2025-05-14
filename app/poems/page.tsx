@@ -1,7 +1,7 @@
 import { getPoems } from "@/lib/sanity-utils"
 import { getPoemImageUrl } from "@/lib/image-utils"
 import Link from "next/link"
-import Image from "next/image"
+import SanityImage from "@/components/sanity-image"
 
 export default async function PoemsPage() {
   const poems = await getPoems()
@@ -10,7 +10,7 @@ export default async function PoemsPage() {
     <div
       className="min-h-screen bg-cover bg-center bg-fixed"
       style={{
-        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95)), url(/images/poetry-bg-1.jpg)`,
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.9)), url(/images/mountain-mist.png)`,
       }}
     >
       <div className="container mx-auto py-10 px-4">
@@ -27,11 +27,12 @@ export default async function PoemsPage() {
             >
               <Link href={`/poems/${poem.slug.current}`} className="block">
                 <div className="relative h-56 w-full">
-                  <Image
-                    src={getPoemImageUrl(poem.coverImage) || "/placeholder.svg"}
+                  <SanityImage
+                    image={poem.coverImage}
                     alt={poem.title}
                     fill
                     className="object-cover transition-transform hover:scale-105 duration-500"
+                    fallbackImage={getPoemImageUrl(null)}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                   <div className="absolute bottom-0 left-0 p-4 text-white">

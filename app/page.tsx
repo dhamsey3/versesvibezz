@@ -1,7 +1,9 @@
 import { getFeaturedPoems, getPoets, getCollections } from "@/lib/sanity-utils"
-import { getPoemImageUrl, getPoetImageUrl, getCollectionImageUrl } from "@/lib/image-utils"
+import { getPoetImageUrl, getCollectionImageUrl } from "@/lib/image-utils"
 import Link from "next/link"
 import Image from "next/image"
+import SanityImage from "@/components/sanity-image"
+import FeaturedPoem from "@/components/featured-poem"
 
 export default async function Home() {
   // Fetch data in parallel
@@ -11,34 +13,50 @@ export default async function Home() {
     getCollections().catch(() => []),
   ])
 
+  // Get the first featured poem for the spotlight section
+  const spotlightPoem = poems.length > 0 ? poems[0] : null
+
+  // Use the rest for the regular featured section (up to 6)
+  const featuredPoems = poems.slice(1, 7)
+
+  // For the carousel, we'll use the first 4 featured poems or all if less than 4
+  const carouselPoems = poems.slice(0, Math.min(4, poems.length))
+
   // Limit the number of items to display
-  const featuredPoems = poems.slice(0, 6)
   const featuredPoets = poets.slice(0, 4)
   const featuredCollections = collections.slice(0, 3)
 
   return (
     <main>
-      {/* Hero Section */}
-      <section className="relative h-[70vh] min-h-[500px] flex items-center justify-center">
+      {/* Hero Section with Mountain Background */}
+      <section className="relative h-[80vh] min-h-[600px] flex items-center justify-center">
         <div className="absolute inset-0 z-0">
-          <Image src="/images/poetry-bg-2.jpg" alt="Poetry background" fill className="object-cover" priority />
-          <div className="absolute inset-0 bg-black/40"></div>
+          <Image
+            src="/images/mountain-mist.png"
+            alt="Misty mountain peak rising through clouds"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-black/30"></div>
         </div>
         <div className="container mx-auto px-4 text-center relative z-10">
-          <h1 className="text-5xl md:text-6xl font-serif font-bold mb-4 text-white">Welcome to VersesVibez</h1>
-          <p className="text-xl max-w-2xl mx-auto mb-8 text-gray-100">
+          <h1 className="text-5xl md:text-6xl font-serif font-bold mb-4 text-white drop-shadow-lg">
+            Welcome to VersesVibez
+          </h1>
+          <p className="text-xl max-w-2xl mx-auto mb-8 text-gray-100 drop-shadow-md">
             Discover beautiful poetry from around the world, from classic to contemporary voices.
           </p>
-          <div className="flex justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-4">
             <Link
               href="/poems"
-              className="bg-white text-purple-800 px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors"
+              className="bg-white/90 backdrop-blur-sm text-gray-800 px-6 py-3 rounded-lg font-medium hover:bg-white transition-colors"
             >
               Explore Poems
             </Link>
             <Link
               href="/poets"
-              className="border border-white text-white px-6 py-3 rounded-lg font-medium hover:bg-white/10 transition-colors"
+              className="border border-white text-white px-6 py-3 rounded-lg font-medium hover:bg-white/20 transition-colors"
             >
               Meet the Poets
             </Link>
@@ -46,12 +64,28 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Featured Poems */}
+      {/* Featured Poem of the Week (Spotlight) */}
+      {spotlightPoem && (
+        <section className="py-16 px-4 bg-gray-50">
+          <div className="container mx-auto">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-serif font-bold">Featured Poem of the Week</h2>
+              <div className="h-1 w-24 bg-purple-600 mx-auto mt-4"></div>
+            </div>
+
+            <div className="max-w-5xl mx-auto">
+              <FeaturedPoem poem={spotlightPoem} priority variant="large" />
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* More Featured Poems */}
       {featuredPoems.length > 0 && (
         <section className="py-16 px-4">
           <div className="container mx-auto">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-3xl font-serif font-bold">Featured Poems</h2>
+              <h2 className="text-3xl font-serif font-bold">More Featured Poems</h2>
               <Link href="/poems" className="text-purple-700 font-medium hover:underline">
                 View all poems
               </Link>
@@ -59,35 +93,7 @@ export default async function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {featuredPoems.map((poem) => (
-                <div
-                  key={poem._id}
-                  className="rounded-lg overflow-hidden bg-white shadow-md hover:shadow-lg transition-shadow h-full"
-                >
-                  <Link href={`/poems/${poem.slug.current}`} className="block">
-                    <div className="relative h-56">
-                      <Image
-                        src={getPoemImageUrl(poem.coverImage) || "/placeholder.svg"}
-                        alt={poem.title}
-                        fill
-                        className="object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                      <div className="absolute bottom-0 left-0 p-4 text-white">
-                        <h3 className="text-xl font-serif font-semibold">{poem.title}</h3>
-                        <p className="text-sm text-gray-200">By {poem.poet}</p>
-                      </div>
-                    </div>
-                  </Link>
-                  <div className="p-4">
-                    {poem.year && <p className="text-sm text-gray-500">{poem.year}</p>}
-                    <Link
-                      href={`/poems/${poem.slug.current}`}
-                      className="inline-block mt-2 px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-sm hover:bg-purple-200 transition-colors"
-                    >
-                      Read poem
-                    </Link>
-                  </div>
-                </div>
+                <FeaturedPoem key={poem._id} poem={poem} />
               ))}
             </div>
           </div>
@@ -110,11 +116,12 @@ export default async function Home() {
                 <Link key={poet._id} href={`/poets/${poet.slug.current}`} className="group">
                   <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow text-center p-6">
                     <div className="relative h-40 w-40 mx-auto rounded-full overflow-hidden mb-4">
-                      <Image
-                        src={getPoetImageUrl(poet.image) || "/placeholder.svg"}
+                      <SanityImage
+                        image={poet.image}
                         alt={poet.name}
                         fill
                         className="object-cover"
+                        fallbackImage={getPoetImageUrl(null)}
                       />
                     </div>
                     <h3 className="text-xl font-serif font-semibold group-hover:text-purple-700 transition-colors">
@@ -126,6 +133,35 @@ export default async function Home() {
                   </div>
                 </Link>
               ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Featured Horizontal Showcase */}
+      {carouselPoems.length > 0 && (
+        <section className="py-16 px-4 bg-purple-50">
+          <div className="container mx-auto">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl font-serif font-bold">Discover Featured Poetry</h2>
+              <p className="text-gray-600 mt-2 max-w-2xl mx-auto">
+                Explore our handpicked selection of exceptional poems that showcase the beauty and diversity of poetry.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {carouselPoems.map((poem) => (
+                <FeaturedPoem key={poem._id} poem={poem} variant="small" />
+              ))}
+            </div>
+
+            <div className="text-center mt-10">
+              <Link
+                href="/poems"
+                className="inline-block px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                Browse All Poems
+              </Link>
             </div>
           </div>
         </section>
@@ -150,11 +186,12 @@ export default async function Home() {
                 >
                   <Link href={`/collections/${collection.slug.current}`} className="block">
                     <div className="relative h-56">
-                      <Image
-                        src={getCollectionImageUrl(collection.coverImage) || "/placeholder.svg"}
+                      <SanityImage
+                        image={collection.coverImage}
                         alt={collection.title}
                         fill
                         className="object-cover"
+                        fallbackImage={getCollectionImageUrl(null)}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                       <div className="absolute bottom-0 left-0 p-4 text-white">

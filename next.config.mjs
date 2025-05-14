@@ -1,39 +1,24 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Ensure images from Sanity are allowed
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   images: {
+    domains: ['cdn.sanity.io'],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'cdn.sanity.io',
+        pathname: '/**',
       },
     ],
+    unoptimized: true,
   },
-  
-  // This is important for Sanity Studio to work correctly
-  transpilePackages: ['next-sanity'],
-  
-  // Ignore TypeScript and ESLint errors during build (optional)
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  
-  // Allow Sanity Studio to run in an iframe
-  async headers() {
-    return [
-      {
-        source: '/studio/:path*',
-        headers: [
-          {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
-          },
-        ],
-      },
-    ]
+  experimental: {
+    serverComponentsExternalPackages: ['@sanity/image-url', '@sanity/vision'],
   },
 }
 

@@ -58,6 +58,12 @@ export default {
       validation: (Rule: any) => Rule.required(),
     },
     {
+      name: "featuredExcerpt",
+      title: "Featured Excerpt",
+      description: "A short excerpt to display when this poem is featured (optional)",
+      type: "text",
+    },
+    {
       name: "themes",
       title: "Themes",
       type: "array",
@@ -79,6 +85,12 @@ export default {
       type: "boolean",
       description: "Set to true to feature this poem on the homepage",
       initialValue: false,
+    },
+    {
+      name: "featuredOrder",
+      title: "Featured Order",
+      description: "Lower numbers appear first in featured lists (1 is the spotlight poem)",
+      type: "number",
     },
   ],
   preview: {

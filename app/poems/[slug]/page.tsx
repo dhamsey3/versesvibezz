@@ -1,7 +1,7 @@
 import { getPoem } from "@/lib/sanity-utils"
-import { getPoemImageUrl, getThemedBackgroundImage } from "@/lib/image-utils"
+import { getPoemImageUrl } from "@/lib/image-utils"
 import { PortableText } from "@portabletext/react"
-import Image from "next/image"
+import SanityImage from "@/components/sanity-image"
 import Link from "next/link"
 
 export default async function PoemPage({ params }: { params: { slug: string } }) {
@@ -19,15 +19,11 @@ export default async function PoemPage({ params }: { params: { slug: string } })
     )
   }
 
-  // Get appropriate images
-  const coverImageUrl = getPoemImageUrl(poem.coverImage)
-  const backgroundImageUrl = getThemedBackgroundImage(poem.themes)
-
   return (
     <div
       className="min-h-screen bg-cover bg-center bg-fixed"
       style={{
-        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95)), url(${backgroundImageUrl})`,
+        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.9)), url(/images/mountain-mist.png)`,
       }}
     >
       <div className="container mx-auto py-10 px-4">
@@ -56,7 +52,14 @@ export default async function PoemPage({ params }: { params: { slug: string } })
           </div>
 
           <div className="mb-10 relative h-64 w-full md:h-96 rounded-lg overflow-hidden shadow-lg">
-            <Image src={coverImageUrl || "/placeholder.svg"} alt={poem.title} fill className="object-cover" priority />
+            <SanityImage
+              image={poem.coverImage}
+              alt={poem.title}
+              fill
+              className="object-cover"
+              priority
+              fallbackImage={getPoemImageUrl(null)}
+            />
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
           </div>
 

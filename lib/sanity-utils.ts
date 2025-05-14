@@ -61,7 +61,7 @@ export async function getPoems() {
 // Fetch featured poems
 export async function getFeaturedPoems() {
   return client.fetch(
-    `*[_type == "poem" && featured == true] {
+    `*[_type == "poem" && featured == true] | order(featuredOrder asc) {
       _id,
       title,
       slug,
@@ -69,6 +69,7 @@ export async function getFeaturedPoems() {
       "poetSlug": poet->slug.current,
       "collection": collection->title,
       "coverImage": coverImage.asset->url,
+      featuredExcerpt,
       year,
       featured
     }`,
