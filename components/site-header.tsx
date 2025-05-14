@@ -1,31 +1,30 @@
 import Link from "next/link"
-import { BookOpen } from "lucide-react"
-import { UserProfile } from "@/components/user-profile"
 
-export function SiteHeader() {
+export default function SiteHeader() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center">
-        <Link href="/" className="flex items-center gap-2 mr-6">
-          <BookOpen className="h-6 w-6" />
-          <span className="hidden font-bold sm:inline-block">VersesVibez</span>
-        </Link>
-        <nav className="hidden md:flex flex-1 items-center gap-6 text-sm">
-          <Link href="/" className="font-medium transition-colors hover:text-primary">
-            Home
+    <header className="bg-white shadow">
+      <div className="container mx-auto px-4 py-6">
+        <div className="flex flex-col md:flex-row justify-between items-center">
+          <Link href="/" className="text-2xl font-bold text-gray-900 mb-4 md:mb-0">
+            VersesVibez
           </Link>
-          <Link href="/poems" className="font-medium transition-colors hover:text-primary">
-            Poems
-          </Link>
-          <Link href="/about" className="font-medium transition-colors hover:text-primary">
-            About
-          </Link>
-          <Link href="/contact" className="font-medium transition-colors hover:text-primary">
-            Contact
-          </Link>
-        </nav>
-        <div className="flex flex-1 items-center justify-end gap-2">
-          <UserProfile />
+          <nav className="flex items-center space-x-6">
+            <Link href="/poets" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+              Poets
+            </Link>
+            <Link href="/poems" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+              Poems
+            </Link>
+            <Link href="/collections" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+              Collections
+            </Link>
+            <Link href="/themes" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+              Themes
+            </Link>
+            <Link href="/studio" className="text-sm font-medium text-gray-600 hover:text-gray-900">
+              Studio
+            </Link>
+          </nav>
         </div>
       </div>
     </header>

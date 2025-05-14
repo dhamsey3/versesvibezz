@@ -1,14 +1,14 @@
 import type React from "react"
-import type { Metadata } from "next"
-import { Inter } from "next/font/google"
 import "./globals.css"
-import { Toaster } from "@/components/ui/toaster"
+import { Inter } from "next/font/google"
+import SiteHeader from "@/components/site-header"
+import { ThemeProvider } from "@/components/theme-provider"
 
 const inter = Inter({ subsets: ["latin"] })
 
-export const metadata: Metadata = {
-  title: "VersesVibez - Poetry Blog",
-  description: "A blog showcasing beautiful poetry",
+export const metadata = {
+  title: "VersesVibez - Poetry Platform",
+  description: "Discover and explore poetry from around the world",
     generator: 'v0.dev'
 }
 
@@ -20,8 +20,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {children}
-        <Toaster />
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <SiteHeader />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )
