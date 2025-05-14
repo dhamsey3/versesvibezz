@@ -5,7 +5,7 @@ import { schemaTypes } from "./schemas"
 
 // Hardcode the project ID to ensure it's always available
 const projectId = "5npbo3eo"
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production"
+const dataset = "production"
 
 // Use a secret key that only you know
 const secretKey = "your-secret-key-123" // Change this to something unique and non-guessable
@@ -13,7 +13,6 @@ const secretKey = "your-secret-key-123" // Change this to something unique and n
 export default defineConfig({
   name: "default",
   title: "VersesVibez Poetry",
-
   projectId,
   dataset,
 
