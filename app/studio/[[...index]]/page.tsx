@@ -1,11 +1,12 @@
 "use client"
 
 import { NextStudio } from "next-sanity/studio"
-import config from "@/sanity.config"
+import config from "@/sanity.config.js"
 import { useState } from "react"
+import Link from "next/link"
 
 export default function StudioPage() {
-  const [error, setError] = useState<Error | null>(null)
+  const [error, setError] = useState(null)
 
   if (error) {
     return (
@@ -28,9 +29,9 @@ export default function StudioPage() {
           >
             Reload Page
           </button>
-          <a href="/" className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
+          <Link href="/" className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
             Return to Home
-          </a>
+          </Link>
         </div>
       </div>
     )
@@ -41,9 +42,9 @@ export default function StudioPage() {
       <NextStudio
         config={config}
         unstable_globalStyles={true}
-        onError={(error) => {
-          console.error("Sanity Studio error:", error)
-          setError(error)
+        onError={(err) => {
+          console.error("Sanity Studio error:", err)
+          setError(err)
         }}
       />
     </div>

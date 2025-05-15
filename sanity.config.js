@@ -3,16 +3,14 @@ import { structureTool } from "sanity/structure"
 import { visionTool } from "@sanity/vision"
 import { schemaTypes } from "./schemas"
 
-// Hardcode the project ID to ensure it's always available
-const projectId = "5npbo3eo"
-const dataset = "production"
-
+// Hardcode the project ID directly in the config
 export default defineConfig({
-  name: "default",
+  name: "versesvibez",
   title: "VersesVibez Poetry",
 
-  projectId,
-  dataset,
+  // Hardcoded values - no environment variables needed
+  projectId: "5npbo3eo",
+  dataset: "production",
 
   plugins: [structureTool(), visionTool()],
 
