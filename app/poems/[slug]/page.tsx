@@ -3,18 +3,13 @@ import { getPoemImageUrl } from "@/lib/image-utils"
 import SanityImage from "@/components/sanity-image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import PageBackground from "@/components/page-background"
 import FeatherIcon from "@/components/feather-icon"
-import PoemContent from "@/components/poem-content"
 
 export default async function PoemPage({ params }: { params: { slug: string } }) {
   // Add error handling for the data fetching
   let poem
   try {
     poem = await getPoem(params.slug)
-
-    // Log the poem data for debugging
-    console.log("Fetched poem data:", JSON.stringify(poem, null, 2))
 
     if (!poem) {
       console.error(`Poem not found for slug: ${params.slug}`)
@@ -25,16 +20,66 @@ export default async function PoemPage({ params }: { params: { slug: string } })
     throw new Error(`Failed to load poem: ${error instanceof Error ? error.message : String(error)}`)
   }
 
+  // Function to render poem content as plain HTML for maximum compatibility
+  function renderPoemContent(content: any) {
+    if (!content || !Array.isArray(content)) {
+      return <p className="text-gray-500 italic">No content available for this poem.</p>
+    }
+
+    return content.map((block, blockIndex) => {
+      // Handle different block types
+      if (block._type === "block") {
+        const style = block.style || "normal"
+
+        // Extract text from spans
+        const text = block.children
+          .filter((child: any) => child._type === "span")
+          .map((span: any) => span.text)
+          .join("")
+
+        // Render based on style
+        if (style === "verse") {
+          return (
+            <p key={blockIndex} className="poem-verse">
+              {text}
+            </p>
+          )
+        } else if (style === "h2") {
+          return (
+            <h2 key={blockIndex} className="poem-heading-2">
+              {text}
+            </h2>
+          )
+        } else if (style === "h3") {
+          return (
+            <h3 key={blockIndex} className="poem-heading-3">
+              {text}
+            </h3>
+          )
+        } else {
+          return (
+            <p key={blockIndex} className="poem-paragraph">
+              {text}
+            </p>
+          )
+        }
+      }
+
+      // Fallback for unknown block types
+      return null
+    })
+  }
+
   return (
-    <PageBackground>
-      <div className="container mx-auto py-6 md:py-10 px-4">
-        <div className="max-w-3xl mx-auto bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-5 md:p-8">
-          <div className="mb-6">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold mb-2 md:mb-3">{poem.title}</h1>
-            <p className="text-gray-600 italic text-sm md:text-base">
+    <div className="poem-page">
+      <div className="container mx-auto py-6 px-4">
+        <div className="poem-container">
+          <div className="poem-header">
+            <h1 className="poem-title">{poem.title}</h1>
+            <p className="poem-byline">
               By{" "}
               {poem.poet ? (
-                <Link href={`/poets/${poem.poet.slug.current}`} className="hover:underline text-purple-600">
+                <Link href={`/poets/${poem.poet.slug.current}`} className="poet-link">
                   {poem.poet.name}
                 </Link>
               ) : (
@@ -43,88 +88,77 @@ export default async function PoemPage({ params }: { params: { slug: string } })
               {poem.year && <span> • {poem.year}</span>}
             </p>
             {poem.collection && (
-              <p className="text-xs md:text-sm text-gray-500 mt-1">
+              <p className="poem-collection">
                 From the collection:{" "}
-                <Link href={`/collections/${poem.collection.slug.current}`} className="hover:underline">
+                <Link href={`/collections/${poem.collection.slug.current}`} className="collection-link">
                   {poem.collection.title}
                 </Link>
               </p>
             )}
           </div>
 
-          <div className="mb-6 md:mb-8 relative h-48 sm:h-56 md:h-72 w-full rounded-lg overflow-hidden shadow-lg">
+          <div className="poem-image-container">
             <SanityImage
               image={poem.coverImage}
               alt={poem.title}
               fill
-              className="object-cover"
+              className="poem-image"
               priority
               fallbackImage={getPoemImageUrl(null)}
               sizes="(max-width: 768px) 100vw, 768px"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
           </div>
 
-          {/* Enhanced Feather Divider */}
-          <div className="flex items-center justify-center my-5 md:my-6">
-            <div className="h-px bg-purple-200 w-1/3"></div>
-            <div className="mx-3">
-              <FeatherIcon className="text-purple-500 w-5 h-5 md:w-6 md:h-6" />
-            </div>
-            <div className="h-px bg-purple-200 w-1/3"></div>
+          {/* Divider */}
+          <div className="poem-divider">
+            <div className="divider-line"></div>
+            <FeatherIcon className="divider-icon" />
+            <div className="divider-line"></div>
           </div>
 
-          {/* Poem content with improved mobile readability */}
-          <PoemContent content={poem.content} />
+          {/* Poem content with simplified rendering for maximum compatibility */}
+          <div className="poem-content">{renderPoemContent(poem.content)}</div>
 
-          {/* Enhanced Feather Divider */}
-          <div className="flex items-center justify-center my-5 md:my-6">
-            <div className="h-px bg-purple-200 w-1/3"></div>
-            <div className="mx-3">
-              <FeatherIcon className="text-purple-500 w-5 h-5 md:w-6 md:h-6" />
-            </div>
-            <div className="h-px bg-purple-200 w-1/3"></div>
+          {/* Divider */}
+          <div className="poem-divider">
+            <div className="divider-line"></div>
+            <FeatherIcon className="divider-icon" />
+            <div className="divider-line"></div>
           </div>
 
           {/* About the poet section */}
           {poem.poet && (
-            <div className="mt-5 md:mt-6 p-4 bg-purple-50 rounded-lg">
-              <h3 className="text-base md:text-lg font-semibold mb-2">About the Poet</h3>
-              <div className="flex items-center">
-                <Link href={`/poets/${poem.poet.slug.current}`} className="flex items-center group">
-                  <span className="font-medium group-hover:text-purple-600 transition-colors text-sm md:text-base">
-                    {poem.poet.name}
-                  </span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="ml-1 text-purple-600"
-                  >
-                    <path d="M5 12h14"></path>
-                    <path d="M12 5l7 7-7 7"></path>
-                  </svg>
-                </Link>
-              </div>
+            <div className="poet-section">
+              <h3 className="poet-section-title">About the Poet</h3>
+              <Link href={`/poets/${poem.poet.slug.current}`} className="poet-link-button">
+                <span>{poem.poet.name}</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="poet-link-icon"
+                >
+                  <path d="M5 12h14"></path>
+                  <path d="M12 5l7 7-7 7"></path>
+                </svg>
+              </Link>
             </div>
           )}
 
           {/* Themes */}
           {poem.themes && poem.themes.length > 0 && (
-            <div className="mt-4 md:mt-6">
-              <h3 className="text-base md:text-lg font-semibold mb-2">Themes</h3>
-              <div className="flex flex-wrap gap-1.5 md:gap-2">
+            <div className="themes-section">
+              <h3 className="themes-title">Themes</h3>
+              <div className="themes-container">
                 {poem.themes.map((theme) => (
                   <Link key={theme._id} href={`/themes/${theme.slug.current}`}>
-                    <span className="px-2 md:px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs md:text-sm hover:bg-purple-200 transition-colors">
-                      {theme.name}
-                    </span>
+                    <span className="theme-tag">{theme.name}</span>
                   </Link>
                 ))}
               </div>
@@ -132,6 +166,6 @@ export default async function PoemPage({ params }: { params: { slug: string } })
           )}
         </div>
       </div>
-    </PageBackground>
+    </div>
   )
 }

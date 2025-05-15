@@ -1,0 +1,207 @@
+/* Reset and base styles */
+.poem-page {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  font-family: Georgia, serif;
+}
+
+.poem-container {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Header styles */
+.poem-header {
+  margin-bottom: 20px;
+}
+
+.poem-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  line-height: 1.3;
+  color: #333;
+}
+
+.poem-byline {
+  font-style: italic;
+  color: #555;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.poem-collection {
+  font-size: 14px;
+  color: #666;
+}
+
+.poet-link,
+.collection-link {
+  color: #8b5cf6;
+  text-decoration: none;
+}
+
+.poet-link:hover,
+.collection-link:hover {
+  text-decoration: underline;
+}
+
+/* Image container */
+.poem-image-container {
+  position: relative;
+  height: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.poem-image {
+  object-fit: cover;
+}
+
+/* Divider */
+.poem-divider {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.divider-line {
+  flex-grow: 1;
+  height: 1px;
+  background-color: #e5d4f9;
+}
+
+.divider-icon {
+  color: #8b5cf6;
+  margin: 0 10px;
+  width: 20px;
+  height: 20px;
+}
+
+/* Poem content - the most important part */
+.poem-content {
+  padding: 10px;
+  font-size: 18px !important;
+  line-height: 1.8 !important;
+  color: #333 !important;
+  margin: 20px 0;
+}
+
+/* Different paragraph styles */
+.poem-verse {
+  font-style: italic;
+  white-space: pre-wrap;
+  margin-bottom: 16px;
+  padding-left: 10px;
+  border-left: 2px solid rgba(139, 92, 246, 0.3);
+  font-size: 18px !important;
+  line-height: 1.8 !important;
+}
+
+.poem-paragraph {
+  margin-bottom: 16px;
+  font-size: 18px !important;
+  line-height: 1.8 !important;
+}
+
+.poem-heading-2 {
+  font-size: 22px !important;
+  font-weight: bold;
+  margin-top: 24px;
+  margin-bottom: 12px;
+}
+
+.poem-heading-3 {
+  font-size: 20px !important;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+/* Poet section */
+.poet-section {
+  background-color: #f5f3ff;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.poet-section-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.poet-link-button {
+  display: flex;
+  align-items: center;
+  color: #8b5cf6;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.poet-link-icon {
+  margin-left: 5px;
+}
+
+/* Themes section */
+.themes-section {
+  margin-top: 20px;
+}
+
+.themes-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.themes-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.theme-tag {
+  background-color: #f5f3ff;
+  color: #8b5cf6;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 14px;
+  display: inline-block;
+}
+
+.theme-tag:hover {
+  background-color: #ede9fe;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 640px) {
+  .poem-container {
+    padding: 15px;
+  }
+
+  .poem-title {
+    font-size: 22px;
+  }
+
+  .poem-content {
+    font-size: 18px !important;
+    line-height: 1.7 !important;
+  }
+
+  .poem-verse,
+  .poem-paragraph {
+    font-size: 18px !important;
+    line-height: 1.7 !important;
+    margin-bottom: 14px;
+  }
+
+  .poem-image-container {
+    height: 180px;
+  }
+}
