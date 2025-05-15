@@ -1,11 +1,11 @@
 import type React from "react"
 import "./globals.css"
-import "./poem-styles.css" // Import poem-specific styles
 import { Inter } from "next/font/google"
 import SiteHeader from "@/components/site-header"
 import SiteFooter from "@/components/site-footer"
 import HiddenAdminLink from "@/components/hidden-admin-link"
 import { ThemeProvider } from "@/components/theme-provider"
+import SanityErrorBoundary from "@/components/sanity-error-boundary"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -26,7 +26,9 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <div className="flex flex-col min-h-screen">
             <SiteHeader />
-            <main className="flex-grow">{children}</main>
+            <main className="flex-grow">
+              <SanityErrorBoundary>{children}</SanityErrorBoundary>
+            </main>
             <SiteFooter />
             <HiddenAdminLink />
           </div>
