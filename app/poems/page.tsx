@@ -2,58 +2,75 @@ import { getPoems } from "@/lib/sanity-utils"
 import { getPoemImageUrl } from "@/lib/image-utils"
 import Link from "next/link"
 import SanityImage from "@/components/sanity-image"
+import PageBackground from "@/components/page-background"
 
 export default async function PoemsPage() {
-  const poems = await getPoems()
+  let poems = []
+  let error = null
+
+  try {
+    poems = await getPoems()
+    console.log(`Rendering ${poems.length} poems`)
+  } catch (err) {
+    error = err instanceof Error ? err.message : String(err)
+    console.error("Error fetching poems:", error)
+  }
 
   return (
-    <div
-      className="min-h-screen bg-cover bg-center bg-fixed"
-      style={{
-        backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.9)), url(/images/mountain-mist.png)`,
-      }}
-    >
-      <div className="container mx-auto py-10 px-4">
-        <h1 className="text-4xl font-serif font-bold mb-2 text-center">Poems</h1>
-        <p className="text-gray-600 text-center mb-10 max-w-2xl mx-auto">
+    <PageBackground>
+      <div className="container mx-auto py-8 md:py-10 px-4">
+        <h1 className="text-3xl md:text-4xl font-serif font-bold mb-2 text-center">Poems</h1>
+        <p className="text-gray-600 text-center mb-8 md:mb-10 max-w-2xl mx-auto text-sm md:text-base">
           Explore our collection of beautiful poetry from various poets and traditions.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {poems.map((poem) => (
-            <div
-              key={poem._id}
-              className="overflow-hidden rounded-lg bg-white shadow-lg transition-all hover:shadow-xl h-full"
-            >
-              <Link href={`/poems/${poem.slug.current}`} className="block">
-                <div className="relative h-56 w-full">
-                  <SanityImage
-                    image={poem.coverImage}
-                    alt={poem.title}
-                    fill
-                    className="object-cover transition-transform hover:scale-105 duration-500"
-                    fallbackImage={getPoemImageUrl(null)}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 p-4 text-white">
-                    <h2 className="text-xl font-serif font-semibold">{poem.title}</h2>
-                    <p className="text-sm text-gray-200 mt-1">By {poem.poet}</p>
+        {error ? (
+          <div className="bg-red-100 p-4 rounded-lg text-red-700 max-w-3xl mx-auto">
+            <h2 className="font-bold mb-2">Error loading poems</h2>
+            <p>{error}</p>
+          </div>
+        ) : poems.length === 0 ? (
+          <div className="text-center py-10">
+            <p className="text-gray-600">No poems found. Please add poems in Sanity Studio.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+            {poems.map((poem) => (
+              <div
+                key={poem._id}
+                className="overflow-hidden rounded-lg bg-white shadow-md transition-all hover:shadow-xl h-full"
+              >
+                <Link href={`/poems/${poem.slug.current}`} className="block">
+                  <div className="relative h-48 md:h-56 w-full">
+                    <SanityImage
+                      image={poem.coverImage}
+                      alt={poem.title}
+                      fill
+                      className="object-cover transition-transform hover:scale-105 duration-500"
+                      fallbackImage={getPoemImageUrl(null)}
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div className="absolute bottom-0 left-0 p-3 md:p-4 text-white">
+                      <h2 className="text-base md:text-xl font-serif font-semibold line-clamp-1">{poem.title}</h2>
+                      <p className="text-xs md:text-sm text-gray-200 mt-0.5 md:mt-1">By {poem.poet}</p>
+                    </div>
                   </div>
-                </div>
-              </Link>
-              <div className="p-4">
-                {poem.year && <p className="text-sm text-gray-500 mb-2">{poem.year}</p>}
-                <Link
-                  href={`/poems/${poem.slug.current}`}
-                  className="inline-block mt-2 px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-sm hover:bg-purple-200 transition-colors"
-                >
-                  Read poem
                 </Link>
+                <div className="p-3 md:p-4">
+                  {poem.year && <p className="text-xs md:text-sm text-gray-500 mb-2">{poem.year}</p>}
+                  <Link
+                    href={`/poems/${poem.slug.current}`}
+                    className="inline-block mt-1 md:mt-2 px-3 py-1.5 md:px-4 md:py-2 bg-purple-100 text-purple-700 rounded-full text-xs md:text-sm hover:bg-purple-200 transition-colors"
+                  >
+                    Read poem
+                  </Link>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
-    </div>
+    </PageBackground>
   )
 }

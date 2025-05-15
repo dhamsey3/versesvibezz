@@ -1,46 +1,108 @@
+"use client"
+
 import Link from "next/link"
+import { useState } from "react"
+import { Menu, X } from "lucide-react"
 
 export default function SiteHeader() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
+
   return (
-    <header className="bg-white shadow-sm">
+    <header className="bg-white shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          <Link href="/" className="flex items-center space-x-2 mb-4 md:mb-0">
-            <div className="relative w-10 h-10">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-purple-700">
-                <path d="M7 20h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <div className="flex justify-between items-center">
+          <Link href="/" className="flex items-center space-x-2">
+            <div className="relative w-8 h-8 md:w-10 md:h-10">
+              {/* Enhanced Feather/Quill Icon */}
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-purple-600">
                 <path
-                  d="M10 20v-4a2 2 0 1 1 4 0v4"
+                  d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5l6.74-6.76z"
                   stroke="currentColor"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
-                <path d="M8 15h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M12 12V4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                <path
+                  d="M16 8L2 22"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M17.5 15H9"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </div>
-            <span className="text-2xl font-serif font-bold text-gray-900">VersesVibez</span>
+            <span className="text-xl md:text-2xl font-serif font-bold text-gray-900">VersesVibez</span>
           </Link>
-          <nav className="flex items-center space-x-6">
-            <Link href="/poets" className="text-sm font-medium text-gray-600 hover:text-purple-700 transition-colors">
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-6">
+            <Link href="/poets" className="text-sm font-medium text-gray-600 hover:text-purple-600 transition-colors">
               Poets
             </Link>
-            <Link href="/poems" className="text-sm font-medium text-gray-600 hover:text-purple-700 transition-colors">
+            <Link href="/poems" className="text-sm font-medium text-gray-600 hover:text-purple-600 transition-colors">
               Poems
             </Link>
             <Link
               href="/collections"
-              className="text-sm font-medium text-gray-600 hover:text-purple-700 transition-colors"
+              className="text-sm font-medium text-gray-600 hover:text-purple-600 transition-colors"
             >
               Collections
             </Link>
-            <Link href="/themes" className="text-sm font-medium text-gray-600 hover:text-purple-700 transition-colors">
+            <Link href="/themes" className="text-sm font-medium text-gray-600 hover:text-purple-600 transition-colors">
               Themes
             </Link>
-            {/* Studio link removed */}
           </nav>
+
+          {/* Mobile Menu Button */}
+          <button className="md:hidden" onClick={toggleMenu} aria-label="Toggle menu">
+            {isMenuOpen ? <X className="w-6 h-6 text-gray-700" /> : <Menu className="w-6 h-6 text-gray-700" />}
+          </button>
         </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="md:hidden mt-4 pb-2 border-t border-gray-200 pt-4">
+            <nav className="flex flex-col space-y-4">
+              <Link
+                href="/poets"
+                className="text-base font-medium text-gray-600 hover:text-purple-600 transition-colors"
+                onClick={toggleMenu}
+              >
+                Poets
+              </Link>
+              <Link
+                href="/poems"
+                className="text-base font-medium text-gray-600 hover:text-purple-600 transition-colors"
+                onClick={toggleMenu}
+              >
+                Poems
+              </Link>
+              <Link
+                href="/collections"
+                className="text-base font-medium text-gray-600 hover:text-purple-600 transition-colors"
+                onClick={toggleMenu}
+              >
+                Collections
+              </Link>
+              <Link
+                href="/themes"
+                className="text-base font-medium text-gray-600 hover:text-purple-600 transition-colors"
+                onClick={toggleMenu}
+              >
+                Themes
+              </Link>
+            </nav>
+          </div>
+        )}
       </div>
     </header>
   )

@@ -18,8 +18,8 @@ const DEFAULT_COLLECTION_IMAGE = "/images/collection-default.png"
 export function getPoemImageUrl(coverImage: any): string {
   if (coverImage) {
     try {
-      // Try to generate a URL from the Sanity image
-      const imageUrl = urlFor(coverImage).url()
+      // Try to generate a URL from the Sanity image with transformations
+      const imageUrl = urlFor(coverImage).auto("format").fit("max").url()
       console.log("Generated poem image URL:", imageUrl)
       return imageUrl
     } catch (error) {
@@ -45,7 +45,7 @@ export function getPoetImageUrl(image: any): string {
         return image
       }
 
-      const imageUrl = urlFor(image).url()
+      const imageUrl = urlFor(image).auto("format").fit("max").url()
       console.log("Generated poet image URL:", imageUrl)
       return imageUrl
     } catch (error) {
@@ -63,7 +63,7 @@ export function getPoetImageUrl(image: any): string {
 export function getCollectionImageUrl(image: any): string {
   if (image) {
     try {
-      const imageUrl = urlFor(image).url()
+      const imageUrl = urlFor(image).auto("format").fit("max").url()
       console.log("Generated collection image URL:", imageUrl)
       return imageUrl
     } catch (error) {
@@ -73,23 +73,4 @@ export function getCollectionImageUrl(image: any): string {
 
   console.log("Using default collection image:", DEFAULT_COLLECTION_IMAGE)
   return DEFAULT_COLLECTION_IMAGE
-}
-
-/**
- * Get a themed background image based on poem themes or content
- */
-export function getThemedBackgroundImage(themes: any[] = []): string {
-  // If no themes, return a random default
-  if (!themes || themes.length === 0) {
-    const defaultImage = DEFAULT_POEM_IMAGES[Math.floor(Math.random() * DEFAULT_POEM_IMAGES.length)]
-    console.log("Using random themed background image:", defaultImage)
-    return defaultImage
-  }
-
-  // In a real implementation, you could match themes to specific images
-  // For now, we'll just use the first theme to select an image deterministically
-  const themeIndex = themes[0].name.charCodeAt(0) % DEFAULT_POEM_IMAGES.length
-  const selectedImage = DEFAULT_POEM_IMAGES[themeIndex]
-  console.log("Using themed background image based on theme:", selectedImage)
-  return selectedImage
 }

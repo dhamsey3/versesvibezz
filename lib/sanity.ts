@@ -18,7 +18,7 @@ const builder = imageUrlBuilder(client)
 
 export function urlFor(source: any) {
   // Add validation to prevent errors with invalid sources
-  if (!source || !source._ref) {
+  if (!source || (!source._ref && !source.asset)) {
     console.error("Invalid image source provided to urlFor:", source)
     return {
       url: () => "/placeholder.svg?key=1wzoz",
@@ -26,7 +26,8 @@ export function urlFor(source: any) {
   }
 
   try {
-    return builder.image(source)
+    // Apply transformations to hide the filename and optimize the image
+    return builder.image(source).auto("format").fit("max")
   } catch (error) {
     console.error("Error building image URL:", error)
     return {

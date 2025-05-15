@@ -13,6 +13,7 @@ interface SanityImageProps {
   className?: string
   fallbackImage?: string
   priority?: boolean
+  sizes?: string
 }
 
 export default function SanityImage({
@@ -24,6 +25,7 @@ export default function SanityImage({
   className = "",
   fallbackImage = "/abstract-geometric-placeholder.png",
   priority = false,
+  sizes = "100vw",
 }: SanityImageProps) {
   const [isError, setIsError] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -41,7 +43,8 @@ export default function SanityImage({
         if (typeof image === "string") {
           setImageUrl(image)
         } else if (image._ref || (image.asset && image.asset._ref)) {
-          const url = urlFor(image).url()
+          // Apply transformations to hide the filename
+          const url = urlFor(image).auto("format").fit("max").url()
           if (url) {
             setImageUrl(url)
           } else {
@@ -86,6 +89,8 @@ export default function SanityImage({
           onError={handleError}
           onLoad={handleLoad}
           priority={priority}
+          sizes={sizes}
+          quality={85}
         />
       ) : (
         <Image
@@ -97,6 +102,8 @@ export default function SanityImage({
           onError={handleError}
           onLoad={handleLoad}
           priority={priority}
+          sizes={sizes}
+          quality={85}
         />
       )}
     </>

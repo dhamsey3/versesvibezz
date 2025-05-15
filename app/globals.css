@@ -92,3 +92,18 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Fix for background image on mobile */
+@media (max-width: 768px) {
+  html,
+  body {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Fix iOS background-attachment: fixed issue */
+  .bg-fixed {
+    background-attachment: scroll;
+  }
+}
