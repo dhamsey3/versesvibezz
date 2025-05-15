@@ -1,0 +1,40 @@
+/* Custom styles for poem content */
+.poem-content {
+  /* Base styles */
+  font-family: "Georgia", serif;
+  color: #333;
+
+  /* Spacing */
+  padding: 0.5rem;
+
+  /* Mobile-specific styles */
+  @media (max-width: 640px) {
+    font-size: 1rem !important;
+    line-height: 1.6 !important;
+    letter-spacing: 0.01em;
+  }
+}
+
+.poem-content p {
+  margin-bottom: 1em;
+}
+
+/* Verse styling */
+.poem-content p.verse {
+  font-style: italic;
+  padding-left: 0.5rem;
+  border-left: 2px solid rgba(139, 92, 246, 0.3);
+  margin-left: 0.5rem;
+}
+
+/* Improve readability on mobile */
+@media (max-width: 640px) {
+  .poem-content p {
+    margin-bottom: 0.75em;
+  }
+
+  .poem-content p.verse {
+    padding-left: 0.5rem;
+    margin-left: 0.25rem;
+  }
+}

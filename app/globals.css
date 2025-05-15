@@ -107,3 +107,27 @@ body {
     background-attachment: scroll;
   }
 }
+
+/* Improved poem text readability */
+.prose p {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+/* Ensure proper text size on mobile */
+@media (max-width: 640px) {
+  .prose {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .prose p {
+    margin-top: 0.75em;
+    margin-bottom: 0.75em;
+  }
+
+  /* Improve contrast for better readability */
+  .bg-white\/80 {
+    background-color: rgba(255, 255, 255, 0.95);
+  }
+}

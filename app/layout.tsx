@@ -1,5 +1,6 @@
 import type React from "react"
 import "./globals.css"
+import "./poem-styles.css" // Import poem-specific styles
 import { Inter } from "next/font/google"
 import SiteHeader from "@/components/site-header"
 import SiteFooter from "@/components/site-footer"
