@@ -17,8 +17,10 @@ const nextConfig = {
     ],
     unoptimized: true,
   },
+  // Moved from experimental to root level
+  serverExternalPackages: ['@sanity/image-url', '@sanity/vision'],
   experimental: {
-    serverComponentsExternalPackages: ['@sanity/image-url', '@sanity/vision'],
+    // Remove serverComponentsExternalPackages from here
   },
 }
 
