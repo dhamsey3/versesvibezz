@@ -17,10 +17,4 @@ export default defineConfig({
   schema: {
     types: schemaTypes,
   },
-
-  // Add CORS origins to allow Studio to work properly
-  cors: {
-    allowOrigins: ["https://versesvibez.vercel.app", "http://localhost:3000"],
-    allowCredentials: true,
-  },
 })
