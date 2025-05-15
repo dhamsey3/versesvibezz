@@ -1,4 +1,4 @@
-import { getPoem } from "@/lib/sanity-utils"
+import { getPoem } from "@/lib/sanity-utils-fixed"
 import { notFound } from "next/navigation"
 import SimplePoemDisplay from "@/components/simple-poem-display"
 
