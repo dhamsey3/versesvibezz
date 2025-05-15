@@ -6,12 +6,23 @@ import SanityImage from "@/components/sanity-image"
 import FeaturedPoem from "@/components/featured-poem"
 
 export default async function Home() {
-  // Fetch data in parallel
-  const [poems, poets, collections] = await Promise.all([
-    getFeaturedPoems().catch(() => []),
-    getPoets().catch(() => []),
-    getCollections().catch(() => []),
-  ])
+  // Fetch data with error handling
+  let poems = []
+  let poets = []
+  let collections = []
+
+  try {
+    // Fetch data in parallel with error handling for each request
+    const poemsPromise = getFeaturedPoems().catch(() => [])
+    const poetsPromise = getPoets().catch(() => [])
+    const collectionsPromise = getCollections().catch(() => [])
+
+    // Wait for all promises to resolve
+    ;[poems, poets, collections] = await Promise.all([poemsPromise, poetsPromise, collectionsPromise])
+  } catch (error) {
+    console.error("Error fetching data for homepage:", error)
+    // Continue with empty arrays if there's an error
+  }
 
   // Get the first featured poem for the spotlight section
   const spotlightPoem = poems.length > 0 ? poems[0] : null

@@ -1,16 +1,5 @@
-import { urlFor } from "./sanity"
-
-// Poetry-themed default images
-const DEFAULT_POEM_IMAGES = [
-  "/images/poetry-bg-1.jpg",
-  "/images/poetry-bg-2.jpg",
-  "/images/poetry-bg-3.jpg",
-  "/images/poetry-bg-4.jpg",
-  "/images/poetry-bg-5.jpg",
-]
-
-const DEFAULT_POET_IMAGE = "/images/poet-default.png"
-const DEFAULT_COLLECTION_IMAGE = "/images/collection-default.png"
+import { urlFor } from "./sanity-client"
+import { imageConfig } from "./config"
 
 /**
  * Get an image URL for a poem, with fallback to a random poetry image
@@ -20,7 +9,6 @@ export function getPoemImageUrl(coverImage: any): string {
     try {
       // Try to generate a URL from the Sanity image with transformations
       const imageUrl = urlFor(coverImage).auto("format").fit("max").url()
-      console.log("Generated poem image URL:", imageUrl)
       return imageUrl
     } catch (error) {
       console.error("Error generating poem image URL:", error)
@@ -28,10 +16,8 @@ export function getPoemImageUrl(coverImage: any): string {
     }
   }
 
-  // Return a random default poem image
-  const defaultImage = DEFAULT_POEM_IMAGES[Math.floor(Math.random() * DEFAULT_POEM_IMAGES.length)]
-  console.log("Using default poem image:", defaultImage)
-  return defaultImage
+  // Return the default poem image
+  return imageConfig.defaultPoemImage
 }
 
 /**
@@ -46,15 +32,13 @@ export function getPoetImageUrl(image: any): string {
       }
 
       const imageUrl = urlFor(image).auto("format").fit("max").url()
-      console.log("Generated poet image URL:", imageUrl)
       return imageUrl
     } catch (error) {
       console.error("Error generating poet image URL:", error)
     }
   }
 
-  console.log("Using default poet image:", DEFAULT_POET_IMAGE)
-  return DEFAULT_POET_IMAGE
+  return imageConfig.defaultPoetImage
 }
 
 /**
@@ -64,13 +48,11 @@ export function getCollectionImageUrl(image: any): string {
   if (image) {
     try {
       const imageUrl = urlFor(image).auto("format").fit("max").url()
-      console.log("Generated collection image URL:", imageUrl)
       return imageUrl
     } catch (error) {
       console.error("Error generating collection image URL:", error)
     }
   }
 
-  console.log("Using default collection image:", DEFAULT_COLLECTION_IMAGE)
-  return DEFAULT_COLLECTION_IMAGE
+  return imageConfig.defaultCollectionImage
 }

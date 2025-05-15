@@ -1,29 +1,43 @@
 import { createClient } from "next-sanity"
+import imageUrlBuilder from "@sanity/image-url"
+import { sanityConfig } from "./config"
 
-// Hardcode the project ID to ensure it's always available
-const projectId = "5npbo3eo"
-const dataset = "production"
-const apiVersion = "2023-05-03"
-
-// Create a client with error handling
+// Create a client with the configuration from config.ts
 export const client = createClient({
-  projectId,
-  dataset,
-  apiVersion,
-  useCdn: process.env.NODE_ENV === "production",
-  // Add token if available (for authenticated requests)
-  token: process.env.SANITY_API_TOKEN,
-  // Add perspective if needed
-  perspective: "published",
+  projectId: sanityConfig.projectId,
+  dataset: sanityConfig.dataset,
+  apiVersion: sanityConfig.apiVersion,
+  useCdn: sanityConfig.useCdn,
 })
 
-// Create a function to safely execute Sanity queries with error handling
-export async function sanityFetch<T>(query: string, params = {}): Promise<T> {
+// Create image URL builder
+const builder = imageUrlBuilder(client)
+
+// Helper function for generating image URLs
+export function urlFor(source: any) {
+  if (!source || (!source._ref && !source.asset)) {
+    console.error("Invalid image source provided to urlFor:", source)
+    return {
+      url: () => "/placeholder.svg",
+    }
+  }
+
+  try {
+    return builder.image(source).auto("format").fit("max")
+  } catch (error) {
+    console.error("Error building image URL:", error)
+    return {
+      url: () => "/placeholder.svg",
+    }
+  }
+}
+
+// Helper function for safe data fetching
+export async function fetchSanityData<T>(query: string, params = {}): Promise<T> {
   try {
     return await client.fetch<T>(query, params)
   } catch (error) {
-    console.error("Sanity query error:", error)
-    // You can customize this error or return a default value
-    throw new Error(`Failed to fetch data from Sanity: ${error instanceof Error ? error.message : String(error)}`)
+    console.error("Error fetching data from Sanity:", error)
+    throw new Error(`Failed to fetch data: ${error instanceof Error ? error.message : String(error)}`)
   }
 }
