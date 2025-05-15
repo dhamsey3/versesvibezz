@@ -1461,8 +1461,8 @@ packages:
       '@sanity/types': ^3.88.3
       '@types/react': 18 || 19
 
-  '@portabletext/editor@1.49.13':
-    resolution: {integrity: sha512-c7yHWlIwv0Wnh8FGEeiF5Vapbki7HQ7P6SuFipFWIqgogrcM1swwR+Gjlg1gZ30QvNl548xpBW6BrsaY3II8NA==}
+  '@portabletext/editor@1.50.0':
+    resolution: {integrity: sha512-Xvto4e3usOzlKsdKJXBD2KdCqcqE2b0ree9QcEHzAYyEdHR+zaQxnxiZRQIwko04LKS2ADyg5Quf0uELvMclrQ==}
     engines: {node: '>=18'}
     peerDependencies:
       '@sanity/schema': ^3.88.3
@@ -7179,7 +7179,7 @@ snapshots:
       get-random-values-esm: 1.0.2
       lodash: 4.17.21
 
-  '@portabletext/editor@1.49.13(@sanity/schema@3.88.3(@types/react@19.0.0)(debug@4.4.1))(@sanity/types@3.88.3(@types/react@19.0.0))(@types/react@19.0.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.2)':
+  '@portabletext/editor@1.50.0(@sanity/schema@3.88.3(@types/react@19.0.0)(debug@4.4.1))(@sanity/types@3.88.3(@types/react@19.0.0))(@types/react@19.0.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.2)':
     dependencies:
       '@portabletext/block-tools': 1.1.26(@sanity/types@3.88.3(@types/react@19.0.0))(@types/react@19.0.0)
       '@portabletext/patches': 1.1.3
@@ -11056,7 +11056,7 @@ snapshots:
       '@dnd-kit/utilities': 3.2.2(react@19.0.0)
       '@juggle/resize-observer': 3.4.0
       '@portabletext/block-tools': 1.1.26(@sanity/types@3.88.3(@types/react@19.0.0))(@types/react@19.0.0)
-      '@portabletext/editor': 1.49.13(@sanity/schema@3.88.3(@types/react@19.0.0)(debug@4.4.1))(@sanity/types@3.88.3(@types/react@19.0.0))(@types/react@19.0.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.2)
+      '@portabletext/editor': 1.50.0(@sanity/schema@3.88.3(@types/react@19.0.0)(debug@4.4.1))(@sanity/types@3.88.3(@types/react@19.0.0))(@types/react@19.0.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(rxjs@7.8.2)
       '@portabletext/react': 3.2.1(react@19.0.0)
       '@portabletext/toolkit': 2.0.17
       '@rexxars/react-json-inspector': 9.0.1(react@19.0.0)

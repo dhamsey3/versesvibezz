@@ -1,87 +1,11 @@
-import { fetchSanityData } from "./sanity-client"
+import { client } from "./sanity"
 import { fallbackPoems, fallbackPoets } from "./fallback-data"
-
-// Fetch all artists
-export async function getArtists() {
-  try {
-    const artists = await fetchSanityData(
-      `*[_type == "artist"] {
-        _id,
-        name,
-        slug,
-        image,
-        bio,
-        genres
-      }`,
-    )
-    return artists
-  } catch (error) {
-    console.error("Error fetching artists:", error)
-    return []
-  }
-}
-
-// Fetch a single artist by slug
-export async function getArtist(slug: string) {
-  if (!slug) {
-    console.error("No slug provided to getArtist function")
-    return null
-  }
-
-  try {
-    const artist = await fetchSanityData(
-      `*[_type == "artist" && slug.current == $slug][0] {
-        _id,
-        name,
-        slug,
-        image,
-        bio,
-        genres,
-        "songs": *[_type == "song" && references(^._id)] {
-          _id,
-          title,
-          slug,
-          coverArt,
-          duration
-        }
-      }`,
-      { slug },
-    )
-
-    return artist
-  } catch (error) {
-    console.error(`Error fetching artist with slug ${slug}:`, error)
-    return null
-  }
-}
-
-// Fetch all songs
-export async function getSongs() {
-  try {
-    const songs = await fetchSanityData(
-      `*[_type == "song"] {
-        _id,
-        title,
-        slug,
-        "artist": artist->name,
-        "artistSlug": artist->slug.current,
-        "album": album->title,
-        coverArt,
-        duration
-      }`,
-    )
-    return songs
-  } catch (error) {
-    console.error("Error fetching songs:", error)
-    return []
-  }
-}
 
 // Fetch all poets with better error handling and fallbacks
 export async function getPoets() {
   try {
     console.log("Fetching all poets")
-    const poets = await fetchSanityData(
+    const poets = await client.fetch(
       `*[_type == "poet"] {
         _id,
         name,
@@ -110,7 +34,7 @@ export async function getPoet(slug: string) {
 
   try {
     console.log(`Fetching poet with slug: ${slug}`)
-    const poet = await fetchSanityData(
+    const poet = await client.fetch(
       `*[_type == "poet" && slug.current == $slug][0] {
         _id,
         name,
@@ -151,7 +75,7 @@ export async function getPoet(slug: string) {
 // Fetch all poems with fallbacks
 export async function getPoems() {
   try {
-    const poems = await fetchSanityData(
+    const poems = await client.fetch(
       `*[_type == "poem"] {
         _id,
         title,
@@ -174,7 +98,7 @@ export async function getPoems() {
 // Fetch featured poems with fallbacks
 export async function getFeaturedPoems() {
   try {
-    const poems = await fetchSanityData(
+    const poems = await client.fetch(
       `*[_type == "poem" && featured == true] | order(featuredOrder asc) {
         _id,
         title,
@@ -204,7 +128,7 @@ export async function getPoem(slug: string) {
 
   try {
     console.log(`Fetching poem with slug: ${slug}`)
-    const poem = await fetchSanityData(
+    const poem = await client.fetch(
       `*[_type == "poem" && slug.current == $slug][0] {
         _id,
         title,
@@ -250,7 +174,7 @@ export async function getPoem(slug: string) {
 // Other functions with similar fallback patterns...
 export async function getCollections() {
   try {
-    return await fetchSanityData(
+    return await client.fetch(
       `*[_type == "collection"] {
         _id,
         title,
@@ -272,7 +196,7 @@ export async function getCollections() {
 
 export async function getCollection(slug: string) {
   try {
-    return await fetchSanityData(
+    return await client.fetch(
       `*[_type == "collection" && slug.current == $slug][0] {
         _id,
         title,
@@ -302,7 +226,7 @@ export async function getCollection(slug: string) {
 
 export async function getThemes() {
   try {
-    return await fetchSanityData(
+    return await client.fetch(
       `*[_type == "theme"] {
         _id,
         name,
@@ -318,7 +242,7 @@ export async function getThemes() {
 
 export async function getTheme(slug: string) {
   try {
-    return await fetchSanityData(
+    return await client.fetch(
       `*[_type == "theme" && slug.current == $slug][0] {
         _id,
         name,
@@ -337,6 +261,62 @@ export async function getTheme(slug: string) {
     )
   } catch (error) {
     console.error(`Error fetching theme with slug ${slug}:`, error)
+    return null
+  }
+}
+
+export async function getArtists() {
+  try {
+    return await client.fetch(`*[_type == "artist"]`)
+  } catch (error) {
+    console.error("Error fetching artists:", error)
+    return []
+  }
+}
+
+export async function getSongs() {
+  try {
+    return await client.fetch(
+      `*[_type == "song"] {
+        _id,
+        title,
+        slug,
+        "artist": artist->name,
+        "artistSlug": artist->slug.current,
+        "album": album->title,
+        coverArt,
+        duration,
+        releaseDate
+      }`,
+    )
+  } catch (error) {
+    console.error("Error fetching songs:", error)
+    return []
+  }
+}
+
+export async function getArtist(slug: string) {
+  try {
+    return await client.fetch(
+      `*[_type == "artist" && slug.current == $slug][0] {
+        _id,
+        name,
+        slug,
+        image,
+        bio,
+        genres,
+        "songs": *[_type == "song" && references(^._id)] {
+          _id,
+          title,
+          slug,
+          coverArt,
+          duration
+        }
+      }`,
+      { slug },
+    )
+  } catch (error) {
+    console.error(`Error fetching artist with slug ${slug}:`, error)
     return null
   }
 }

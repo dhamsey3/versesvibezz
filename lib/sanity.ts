@@ -1,37 +1,17 @@
-import { createClient } from "next-sanity"
-import imageUrlBuilder from "@sanity/image-url"
+import { sanityClient, urlFor as urlForStandalone } from "./sanity-standalone"
 
-// Hardcode the project ID to ensure it's always available
-const projectId = "5npbo3eo"
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production"
-const apiVersion = "2023-05-03"
+// Re-export the standalone client and urlFor function
+export const client = sanityClient
+export const urlFor = urlForStandalone
 
-export const client = createClient({
-  projectId,
-  dataset,
-  apiVersion,
-  useCdn: process.env.NODE_ENV === "production",
-})
-
-// Helper function for generating image URLs with the Sanity Image Pipeline
-const builder = imageUrlBuilder(client)
-
-export function urlFor(source: any) {
-  // Add validation to prevent errors with invalid sources
-  if (!source || (!source._ref && !source.asset)) {
-    console.error("Invalid image source provided to urlFor:", source)
-    return {
-      url: () => "/placeholder.svg?key=1wzoz",
-    }
-  }
-
+// Export a function to check if Sanity is configured correctly
+export function isSanityConfigured() {
   try {
-    // Apply transformations to hide the filename and optimize the image
-    return builder.image(source).auto("format").fit("max")
+    // Try to access the projectId to see if it's configured
+    const projectId = client.config().projectId
+    return !!projectId
   } catch (error) {
-    console.error("Error building image URL:", error)
-    return {
-      url: () => "/placeholder.svg?key=37dso",
-    }
+    console.error("Sanity configuration error:", error)
+    return false
   }
 }
