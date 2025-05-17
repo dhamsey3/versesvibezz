@@ -1,46 +1,62 @@
-import { getPoets } from "@/lib/sanity-utils"
+import { getAllPoets, buildImageUrl } from "@/lib/direct-sanity"
 import Link from "next/link"
 import Image from "next/image"
-import { urlFor } from "@/lib/sanity-client"
 import HardcodedPoetsList from "@/components/hardcoded-poets-list"
 
 export default async function PoetsPage() {
   try {
-    const poets = await getPoets()
+    console.log("Attempting to fetch all poets")
+    const poets = await getAllPoets()
 
-    // If we couldn't get any poets, fall back to hardcoded content
+    // If we couldn't get any poets, use the hardcoded list
     if (!poets || poets.length === 0) {
+      console.log("No poets found, using hardcoded fallback")
       return <HardcodedPoetsList />
     }
 
-    return (
-      <div className="container mx-auto py-8 md:py-10 px-4">
-        <h1 className="text-3xl md:text-4xl font-serif font-bold mb-2 text-center">Poets</h1>
-        <p className="text-gray-600 text-center mb-8 md:mb-10 max-w-2xl mx-auto text-sm md:text-base">
-          Discover the voices behind our collection of poetry.
-        </p>
+    console.log(`Successfully fetched ${poets.length} poets`)
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+    return (
+      <div className="container mx-auto py-8 px-4">
+        <h1 className="text-3xl font-serif font-bold mb-8 text-center">Meet the Poets</h1>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {poets.map((poet) => (
-            <Link key={poet._id} href={`/poets/${poet.slug.current}`} className="group">
-              <div className="overflow-hidden rounded-lg bg-white shadow-md transition-all hover:shadow-lg h-full">
-                <div className="relative h-48 md:h-64 w-full">
-                  <Image
-                    src={poet.image ? urlFor(poet.image).url() : "/images/poet-default.png"}
-                    alt={poet.name}
-                    fill
-                    className="object-cover transition-transform group-hover:scale-105"
-                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 p-3 md:p-4 text-white">
-                    <h2 className="text-base md:text-xl font-serif font-semibold line-clamp-1">{poet.name}</h2>
-                    {poet.styles && poet.styles.length > 0 && (
-                      <p className="text-xs md:text-sm text-gray-200 mt-0.5 md:mt-1 line-clamp-1">
-                        {poet.styles.join(", ")}
-                      </p>
-                    )}
+            <Link
+              key={poet._id}
+              href={`/poets/${poet.slug.current}`}
+              className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col"
+            >
+              <div className="relative h-48">
+                <Image
+                  src={poet.image ? buildImageUrl(poet.image) : "/images/poet-default.png"}
+                  alt={poet.name}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 p-4 text-white">
+                  <h2 className="text-xl font-serif font-semibold">{poet.name}</h2>
+                  {poet.birthDate && poet.deathDate && (
+                    <p className="text-sm text-gray-200">
+                      {poet.birthDate} - {poet.deathDate}
+                    </p>
+                  )}
+                </div>
+              </div>
+              <div className="p-4 flex-grow">
+                {poet.styles && poet.styles.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {poet.styles.map((style, index) => (
+                      <span key={index} className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">
+                        {style}
+                      </span>
+                    ))}
                   </div>
+                )}
+                <p className="text-sm text-gray-500">{poet.poemCount || 0} poems</p>
+                <div className="mt-2 inline-block px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">
+                  View profile
                 </div>
               </div>
             </Link>

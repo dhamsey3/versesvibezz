@@ -1,63 +1,90 @@
 import Link from "next/link"
 import Image from "next/image"
 
-// Hardcoded poet data for the list
-const poetsList = [
+// Hardcoded poets data
+const hardcodedPoets = [
   {
-    slug: "robert-frost",
+    _id: "poet-1",
     name: "Robert Frost",
-    styles: ["Nature", "Rural Life", "American"],
-    image: "/images/poet-default.png",
+    slug: { current: "robert-frost" },
+    birthDate: "1874",
+    deathDate: "1963",
+    styles: ["Nature", "Rural Life"],
+    poemCount: 2,
   },
   {
-    slug: "emily-dickinson",
+    _id: "poet-2",
     name: "Emily Dickinson",
-    styles: ["Lyric Poetry", "Romanticism", "American"],
-    image: "/images/poet-default.png",
+    slug: { current: "emily-dickinson" },
+    birthDate: "1830",
+    deathDate: "1886",
+    styles: ["Lyric Poetry", "Romanticism"],
+    poemCount: 2,
   },
   {
-    slug: "william-ernest-henley",
+    _id: "poet-3",
     name: "William Ernest Henley",
-    styles: ["Victorian", "Inspirational"],
-    image: "/images/poet-default.png",
+    slug: { current: "william-ernest-henley" },
+    birthDate: "1849",
+    deathDate: "1903",
+    styles: ["Victorian"],
+    poemCount: 1,
   },
   {
-    slug: "maya-angelou",
+    _id: "poet-4",
     name: "Maya Angelou",
-    styles: ["Civil Rights", "Autobiography", "American"],
-    image: "/images/poet-default.png",
+    slug: { current: "maya-angelou" },
+    birthDate: "1928",
+    deathDate: "2014",
+    styles: ["Civil Rights", "Autobiography"],
+    poemCount: 2,
+  },
+  {
+    _id: "poet-5",
+    name: "Anonymous",
+    slug: { current: "anonymous" },
+    styles: ["Various"],
+    poemCount: 1,
   },
 ]
 
 export default function HardcodedPoetsList() {
   return (
-    <div className="container mx-auto py-8 md:py-10 px-4">
-      <h1 className="text-3xl md:text-4xl font-serif font-bold mb-2 text-center">Poets</h1>
-      <p className="text-gray-600 text-center mb-8 md:mb-10 max-w-2xl mx-auto text-sm md:text-base">
-        Discover the voices behind our collection of poetry.
-      </p>
+    <div className="container mx-auto py-8 px-4">
+      <h1 className="text-3xl font-serif font-bold mb-8 text-center">Meet the Poets</h1>
 
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-        {poetsList.map((poet) => (
-          <Link key={poet.slug} href={`/poets/${poet.slug}`} className="group">
-            <div className="overflow-hidden rounded-lg bg-white shadow-md transition-all hover:shadow-lg h-full">
-              <div className="relative h-48 md:h-64 w-full">
-                <Image
-                  src={poet.image || "/placeholder.svg"}
-                  alt={poet.name}
-                  fill
-                  className="object-cover transition-transform group-hover:scale-105"
-                  sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                <div className="absolute bottom-0 left-0 p-3 md:p-4 text-white">
-                  <h2 className="text-base md:text-xl font-serif font-semibold line-clamp-1">{poet.name}</h2>
-                  {poet.styles && poet.styles.length > 0 && (
-                    <p className="text-xs md:text-sm text-gray-200 mt-0.5 md:mt-1 line-clamp-1">
-                      {poet.styles.join(", ")}
-                    </p>
-                  )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {hardcodedPoets.map((poet) => (
+          <Link
+            key={poet._id}
+            href={`/poets/${poet.slug.current}`}
+            className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col"
+          >
+            <div className="relative h-48">
+              <Image src="/images/poet-default.png" alt={poet.name} fill className="object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 p-4 text-white">
+                <h2 className="text-xl font-serif font-semibold">{poet.name}</h2>
+                {poet.birthDate && poet.deathDate && (
+                  <p className="text-sm text-gray-200">
+                    {poet.birthDate} - {poet.deathDate}
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className="p-4 flex-grow">
+              {poet.styles && poet.styles.length > 0 && (
+                <div className="flex flex-wrap gap-1 mb-2">
+                  {poet.styles.map((style, index) => (
+                    <span key={index} className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">
+                      {style}
+                    </span>
+                  ))}
                 </div>
+              )}
+              <p className="text-sm text-gray-500">{poet.poemCount || 0} poems</p>
+              <div className="mt-2 inline-block px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs">
+                View profile
               </div>
             </div>
           </Link>

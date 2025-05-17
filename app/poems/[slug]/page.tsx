@@ -1,9 +1,8 @@
-import { getPoem } from "@/lib/sanity-utils"
+import { getPoem, buildImageUrl } from "@/lib/direct-sanity"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
 import FeatherIcon from "@/components/feather-icon"
-import { urlFor } from "@/lib/sanity-client"
 import HardcodedPoemDisplay from "@/components/hardcoded-poem-display"
 
 export default async function PoemPage({ params }: { params: { slug: string } }) {
@@ -12,29 +11,16 @@ export default async function PoemPage({ params }: { params: { slug: string } })
   }
 
   try {
-    // First attempt: Try to get the poem using the regular Sanity client
-    let poem = await getPoem(params.slug)
+    console.log(`Attempting to fetch poem with slug: ${params.slug}`)
+    const poem = await getPoem(params.slug)
 
-    // If that fails, try the direct API approach
+    // If we couldn't get the poem, use the hardcoded version
     if (!poem) {
-      console.log("Regular Sanity client failed, trying direct API fetch")
-      try {
-        // Use fetch with cache: 'no-store' to ensure fresh data
-        const response = await fetch(`/api/poem/${params.slug}`, { cache: "no-store" })
-        if (response.ok) {
-          const data = await response.json()
-          poem = data.poem
-        }
-      } catch (apiError) {
-        console.error("API fetch also failed:", apiError)
-      }
-    }
-
-    // If both methods fail, fall back to hardcoded content
-    if (!poem) {
-      console.log("All Sanity fetch methods failed, using hardcoded fallback")
+      console.log(`No poem found with slug: ${params.slug}, using hardcoded fallback`)
       return <HardcodedPoemDisplay slug={params.slug} />
     }
+
+    console.log(`Successfully fetched poem: ${poem.title}`)
 
     // Function to render poem content
     function renderPoemContent(content: any) {
@@ -91,6 +77,9 @@ export default async function PoemPage({ params }: { params: { slug: string } })
     const poetName = typeof poem.poet === "object" ? poem.poet?.name : poem.poet
     const poetSlug = typeof poem.poet === "object" ? poem.poet?.slug?.current : poem.poetSlug
 
+    // Get the image URL
+    const imageUrl = poem.coverImage ? buildImageUrl(poem.coverImage) : "/images/poetry-bg-1.jpg"
+
     return (
       <div className="container mx-auto py-8 px-4">
         <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-6">
@@ -110,13 +99,7 @@ export default async function PoemPage({ params }: { params: { slug: string } })
           </div>
 
           <div className="mb-8 relative h-56 w-full rounded-lg overflow-hidden">
-            <Image
-              src={poem.coverImage ? urlFor(poem.coverImage).url() : "/images/poetry-bg-1.jpg"}
-              alt={poem.title}
-              fill
-              className="object-cover"
-              priority
-            />
+            <Image src={imageUrl || "/placeholder.svg"} alt={poem.title} fill className="object-cover" priority />
           </div>
 
           {/* Divider */}
