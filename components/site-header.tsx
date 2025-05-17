@@ -66,6 +66,12 @@ export default function SiteHeader() {
             >
               Admin
             </Link>
+            <Link
+              href="/studio-access"
+              className="text-sm font-medium text-purple-600 hover:text-purple-800 transition-colors"
+            >
+              Studio
+            </Link>
           </nav>
 
           {/* Mobile Menu Button */}
@@ -112,6 +118,13 @@ export default function SiteHeader() {
                 onClick={toggleMenu}
               >
                 Admin
+              </Link>
+              <Link
+                href="/studio-access"
+                className="text-base font-medium text-purple-600 hover:text-purple-800 transition-colors"
+                onClick={toggleMenu}
+              >
+                Studio
               </Link>
             </nav>
           </div>
