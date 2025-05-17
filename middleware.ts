@@ -1,40 +1,31 @@
-import { type NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
+import type { NextRequest } from "next/server"
 
+// This function can be marked `async` if using `await` inside
 export function middleware(request: NextRequest) {
-  // Apply to studio and admin routes
+  // Check if the request is for a studio-related route
   if (
     request.nextUrl.pathname.startsWith("/studio") ||
-    request.nextUrl.pathname.startsWith("/admin-") ||
-    request.nextUrl.pathname === "/admin-images"
+    request.nextUrl.pathname.startsWith("/studio-iframe") ||
+    request.nextUrl.pathname.startsWith("/studio-access") ||
+    request.nextUrl.pathname.startsWith("/external-studio")
   ) {
-    // Get the authorization header
-    const basicAuth = request.headers.get("authorization")
+    // Get the secret from the URL or use a default
+    const secretKey = request.nextUrl.searchParams.get("key") || ""
 
-    // Check if authentication exists and is valid
-    if (basicAuth) {
-      const authValue = basicAuth.split(" ")[1]
-      const [user, pwd] = atob(authValue).split(":")
+    // Check if the secret key is valid using the environment variable
+    const validKey = process.env.STUDIO_ACCESS_KEY || ""
 
-      // Replace with your desired username and password
-      if (user === "admin" && pwd === "your-secure-password") {
-        return NextResponse.next()
-      }
+    if (!validKey || secretKey !== validKey) {
+      // If no valid key is provided, redirect to a 404 page
+      return NextResponse.rewrite(new URL("/not-found", request.url))
     }
-
-    // For security, don't indicate that this is a studio or CMS
-    // Just return a generic 404 response to make it appear the page doesn't exist
-    return new NextResponse("Page not found", {
-      status: 404,
-      headers: {
-        "WWW-Authenticate": 'Basic realm="Secure Area"',
-        "Content-Type": "text/plain",
-      },
-    })
   }
 
   return NextResponse.next()
 }
 
+// See "Matching Paths" below to learn more
 export const config = {
-  matcher: ["/studio/:path*", "/admin-cms-:path*", "/admin-images"],
+  matcher: ["/studio/:path*", "/studio-iframe/:path*", "/studio-access/:path*", "/external-studio/:path*"],
 }

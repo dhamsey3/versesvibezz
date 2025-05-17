@@ -1,16 +1,14 @@
 import { createClient } from "next-sanity"
 import imageUrlBuilder from "@sanity/image-url"
+import { sanityConfig } from "./sanity-config-fixed"
 
-// Hardcoded configuration to ensure consistent behavior
-const config = {
-  projectId: "5npbo3eo",
-  dataset: "production",
-  apiVersion: "2023-05-03",
-  useCdn: true,
-}
-
-// Create client with error handling
-export const client = createClient(config)
+// Create client with hardcoded configuration
+export const client = createClient({
+  projectId: sanityConfig.projectId,
+  dataset: sanityConfig.dataset,
+  apiVersion: sanityConfig.apiVersion,
+  useCdn: sanityConfig.useCdn,
+})
 
 // Create image builder
 const builder = imageUrlBuilder(client)

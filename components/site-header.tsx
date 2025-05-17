@@ -60,18 +60,7 @@ export default function SiteHeader() {
             <Link href="/themes" className="text-sm font-medium text-gray-600 hover:text-purple-600 transition-colors">
               Themes
             </Link>
-            <Link
-              href="/sanity-debug"
-              className="text-sm font-medium text-gray-600 hover:text-purple-600 transition-colors"
-            >
-              Admin
-            </Link>
-            <Link
-              href="/studio-access"
-              className="text-sm font-medium text-purple-600 hover:text-purple-800 transition-colors"
-            >
-              Studio
-            </Link>
+            {/* Studio link removed for public visitors */}
           </nav>
 
           {/* Mobile Menu Button */}
@@ -112,20 +101,7 @@ export default function SiteHeader() {
               >
                 Themes
               </Link>
-              <Link
-                href="/sanity-debug"
-                className="text-base font-medium text-gray-600 hover:text-purple-600 transition-colors"
-                onClick={toggleMenu}
-              >
-                Admin
-              </Link>
-              <Link
-                href="/studio-access"
-                className="text-base font-medium text-purple-600 hover:text-purple-800 transition-colors"
-                onClick={toggleMenu}
-              >
-                Studio
-              </Link>
+              {/* Studio link removed for public visitors */}
             </nav>
           </div>
         )}

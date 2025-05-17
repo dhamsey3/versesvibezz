@@ -1,29 +1,18 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
 
 export default function HiddenAdminLink() {
-  const [showLink, setShowLink] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
 
-  // This will only be triggered by a specific key combination
   useEffect(() => {
-    let keys: string[] = []
-    const keySequence = ["Control", "Alt", "a"] // Ctrl+Alt+A
-
+    // Listen for a specific key combination (Ctrl+Alt+A)
     const handleKeyDown = (e: KeyboardEvent) => {
-      keys.push(e.key)
-
-      // Only keep the last N keys in the buffer where N is the length of the sequence
-      if (keys.length > keySequence.length) {
-        keys = keys.slice(keys.length - keySequence.length)
-      }
-
-      // Check if the current keys match the sequence
-      const matchesSequence = keys.join(",") === keySequence.join(",")
-
-      if (matchesSequence) {
-        setShowLink(true)
-        setTimeout(() => setShowLink(false), 5000) // Hide after 5 seconds
+      if (e.ctrlKey && e.altKey && e.key === "a") {
+        setIsVisible(true)
+        // Auto-hide after 10 seconds
+        setTimeout(() => setIsVisible(false), 10000)
       }
     }
 
@@ -31,19 +20,14 @@ export default function HiddenAdminLink() {
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [])
 
-  if (!showLink) return null
+  if (!isVisible) return null
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 bg-white p-3 rounded-lg shadow-lg border border-gray-200">
-      <a
-        href="/studio"
-        className="text-sm text-gray-600 hover:text-purple-700"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+    <div className="fixed bottom-4 left-4 z-50 bg-white p-3 rounded-lg shadow-lg border border-gray-200">
+      <Link href="/admin" className="text-sm text-gray-600 hover:text-purple-700">
         Admin Access
-      </a>
-      <div className="text-xs text-gray-400 mt-1">This link will disappear in 5 seconds</div>
+      </Link>
+      <div className="text-xs text-gray-400 mt-1">This link will disappear in 10 seconds</div>
     </div>
   )
 }

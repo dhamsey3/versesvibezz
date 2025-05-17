@@ -1,19 +1,26 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { getStudioUrl } from "@/lib/sanity-config"
 import Link from "next/link"
 
 export default function ExternalStudioPage() {
   const [redirectAttempted, setRedirectAttempted] = useState(false)
-  // Use the v0 preview URL provided by the user
-  const studioUrl =
-    "https://kzmjpasfvg9lbi5uesm1.lite.vusercontent.net/studio/structure/poem;2035ffaa-afc4-4356-822c-ae0e76bf86aa"
+  const [studioUrl, setStudioUrl] = useState("")
+  const [isV0Preview, setIsV0Preview] = useState(false)
 
   useEffect(() => {
+    // Get the appropriate studio URL
+    const url = getStudioUrl()
+    setStudioUrl(url)
+
+    // Check if we're in a v0 preview
+    setIsV0Preview(typeof window !== "undefined" && window.location.hostname.includes("vusercontent.net"))
+
     // Try to redirect after a short delay
     const timer = setTimeout(() => {
       try {
-        window.open(studioUrl, "_blank")
+        window.open(url, "_blank")
         setRedirectAttempted(true)
       } catch (error) {
         console.error("Failed to open studio in new window:", error)
@@ -44,21 +51,27 @@ export default function ExternalStudioPage() {
         </div>
       )}
 
-      <div className="mt-12 max-w-lg mx-auto">
-        <h2 className="text-xl font-semibold mb-4">Important Note</h2>
-        <div className="text-left bg-yellow-50 p-6 rounded-lg">
-          <p className="mb-4">
-            You're using a v0 preview URL for the Sanity Studio. This URL is specific to this preview session and may
-            not work in other contexts or after the session expires.
-          </p>
+      {isV0Preview && (
+        <div className="mt-12 max-w-lg mx-auto">
+          <h2 className="text-xl font-semibold mb-4">Important Note</h2>
+          <div className="text-left bg-yellow-50 p-6 rounded-lg">
+            <p className="mb-4">
+              You're using a v0 preview URL for the Sanity Studio. This URL is specific to this preview session and may
+              not work in other contexts or after the session expires.
+            </p>
+          </div>
         </div>
+      )}
 
-        <div className="mt-6 text-left bg-gray-50 p-6 rounded-lg">
+      <div className="mt-12 max-w-lg mx-auto">
+        <h2 className="text-xl font-semibold mb-4">Troubleshooting</h2>
+        <div className="text-left bg-gray-50 p-6 rounded-lg">
           <p className="mb-4">If you're having trouble accessing the studio:</p>
           <ul className="list-disc pl-5 space-y-2 text-gray-700">
-            <li>Make sure you're using the correct v0 preview URL</li>
+            <li>Make sure you're logged in to your Sanity account</li>
             <li>Check that your browser allows pop-ups from this site</li>
             <li>Try using a different browser (Chrome or Firefox recommended)</li>
+            <li>Clear your browser cache and cookies</li>
           </ul>
 
           <div className="mt-6 pt-4 border-t border-gray-200">

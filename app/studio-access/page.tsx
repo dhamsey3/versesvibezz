@@ -1,18 +1,34 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { getStudioUrl } from "@/lib/sanity-config"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export default function StudioAccessPage() {
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  // Use the v0 preview URL provided by the user
-  const [studioUrl, setStudioUrl] = useState(
-    "https://kzmjpasfvg9lbi5uesm1.lite.vusercontent.net/studio/structure/poem;2035ffaa-afc4-4356-822c-ae0e76bf86aa",
-  )
+  const [studioUrl, setStudioUrl] = useState("")
+  const [isV0Preview, setIsV0Preview] = useState(false)
+
+  const router = useRouter()
 
   useEffect(() => {
-    // Since we're using a v0 preview URL, we'll skip the API check
-    setLoading(false)
+    // Check if the key parameter is present in the URL
+    const params = new URLSearchParams(window.location.search)
+    const key = params.get("key")
+
+    // If no key is provided, redirect to the admin page
+    if (!key) {
+      router.push("/admin")
+    }
+  }, [router])
+
+  useEffect(() => {
+    // Get the appropriate studio URL
+    const url = getStudioUrl()
+    setStudioUrl(url)
+
+    // Check if we're in a v0 preview
+    setIsV0Preview(typeof window !== "undefined" && window.location.hostname.includes("vusercontent.net"))
   }, [])
 
   const handleOpenStudio = () => {
@@ -23,12 +39,14 @@ export default function StudioAccessPage() {
     <div className="container mx-auto py-10 px-4 max-w-3xl">
       <h1 className="text-3xl font-bold mb-6">Sanity Studio Access</h1>
 
-      <div className="bg-blue-50 p-6 rounded-lg mb-6">
-        <h2 className="text-xl font-semibold text-blue-800 mb-2">v0 Preview Studio</h2>
-        <p className="text-blue-800 mb-4">
-          You're using a v0 preview URL for the Sanity Studio. This URL is specific to this preview session.
-        </p>
-      </div>
+      {isV0Preview && (
+        <div className="bg-blue-50 p-6 rounded-lg mb-6">
+          <h2 className="text-xl font-semibold text-blue-800 mb-2">v0 Preview Studio</h2>
+          <p className="text-blue-800 mb-4">
+            You're using a v0 preview URL for the Sanity Studio. This URL is specific to this preview session.
+          </p>
+        </div>
+      )}
 
       <div className="bg-white p-6 rounded-lg shadow-md mb-8">
         <h2 className="text-xl font-semibold mb-4">Access Studio</h2>
@@ -50,9 +68,11 @@ export default function StudioAccessPage() {
                 Open
               </button>
             </div>
-            <p className="text-sm text-gray-500 mt-2">
-              This is a v0 preview URL and will only work in this preview session.
-            </p>
+            {isV0Preview && (
+              <p className="text-sm text-gray-500 mt-2">
+                This is a v0 preview URL and will only work in this preview session.
+              </p>
+            )}
           </div>
 
           <div>
@@ -72,13 +92,19 @@ export default function StudioAccessPage() {
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-xl font-semibold mb-4">Troubleshooting</h2>
         <div className="space-y-3">
-          <p className="font-medium">If you're seeing a "Studio not found" error:</p>
+          <p className="font-medium">If you're having trouble accessing the studio:</p>
           <ol className="list-decimal pl-5 space-y-2">
-            <li>Make sure you're using the correct v0 preview URL</li>
-            <li>Try refreshing the page and getting a new URL if needed</li>
+            <li>Make sure you're logged in to your Sanity account</li>
             <li>Check that your browser allows third-party cookies</li>
             <li>Try using a different browser (Chrome or Firefox recommended)</li>
+            <li>Clear your browser cache and cookies</li>
           </ol>
+
+          <div className="mt-6 pt-4 border-t border-gray-200">
+            <Link href="/" className="text-purple-600 hover:underline">
+              Return to Home
+            </Link>
+          </div>
         </div>
       </div>
     </div>
