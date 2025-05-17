@@ -5,7 +5,7 @@ import SiteHeader from "@/components/site-header"
 import SiteFooter from "@/components/site-footer"
 import HiddenAdminLink from "@/components/hidden-admin-link"
 import { ThemeProvider } from "@/components/theme-provider"
-import SanityErrorHandler from "@/components/sanity-error-handler"
+import SanityStatusIndicator from "@/components/sanity-status-indicator"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -29,7 +29,7 @@ export default function RootLayout({
             <main className="flex-grow">{children}</main>
             <SiteFooter />
             <HiddenAdminLink />
-            <SanityErrorHandler />
+            <SanityStatusIndicator />
           </div>
         </ThemeProvider>
       </body>
