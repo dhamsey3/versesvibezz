@@ -2,11 +2,23 @@
 
 import { NextStudio } from "next-sanity/studio"
 import config from "@/sanity.config.js"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 
 export default function StudioPage() {
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<Error | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    // Add a timeout to detect if Studio is taking too long to load
+    const timeout = setTimeout(() => {
+      if (loading) {
+        console.warn("Studio is taking a long time to load, might be an issue")
+      }
+    }, 5000)
+
+    return () => clearTimeout(timeout)
+  }, [loading])
 
   if (error) {
     return (
@@ -22,16 +34,29 @@ export default function StudioPage() {
             </details>
           )}
         </div>
-        <div className="flex gap-4">
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Reload Page
-          </button>
-          <Link href="/" className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
-            Return to Home
-          </Link>
+        <div className="flex flex-col space-y-4">
+          <p className="text-sm">This error might be caused by:</p>
+          <ul className="list-disc pl-5 text-sm space-y-1">
+            <li>Incorrect Sanity project configuration</li>
+            <li>Network connectivity issues</li>
+            <li>CORS or authentication problems</li>
+            <li>Schema validation errors</li>
+          </ul>
+
+          <div className="flex flex-wrap gap-4 mt-4">
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Reload Page
+            </button>
+            <Link href="/external-studio" className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+              Try External Studio
+            </Link>
+            <Link href="/" className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
+              Return to Home
+            </Link>
+          </div>
         </div>
       </div>
     )
@@ -45,6 +70,9 @@ export default function StudioPage() {
         onError={(err) => {
           console.error("Sanity Studio error:", err)
           setError(err)
+        }}
+        onLoading={(isLoading) => {
+          setLoading(isLoading)
         }}
       />
     </div>

@@ -60,6 +60,12 @@ export default function SiteHeader() {
             <Link href="/themes" className="text-sm font-medium text-gray-600 hover:text-purple-600 transition-colors">
               Themes
             </Link>
+            <Link
+              href="/sanity-debug"
+              className="text-sm font-medium text-gray-600 hover:text-purple-600 transition-colors"
+            >
+              Admin
+            </Link>
           </nav>
 
           {/* Mobile Menu Button */}
@@ -99,6 +105,13 @@ export default function SiteHeader() {
                 onClick={toggleMenu}
               >
                 Themes
+              </Link>
+              <Link
+                href="/sanity-debug"
+                className="text-base font-medium text-gray-600 hover:text-purple-600 transition-colors"
+                onClick={toggleMenu}
+              >
+                Admin
               </Link>
             </nav>
           </div>

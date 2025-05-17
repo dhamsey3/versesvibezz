@@ -13,8 +13,19 @@ export default defineConfig({
   schema: {
     types: schemaTypes,
   },
-  // Add automatic error recovery
-  unstable_clientLogging: {
-    level: "warning",
+  // Add better error handling and logging
+  studio: {
+    components: {
+      // Add custom error handling components if needed
+    },
+  },
+  // Disable strict mode for more lenient error handling
+  strict: false,
+  // Add development mode for better debugging
+  development: process.env.NODE_ENV !== "production",
+  // Add more detailed logging
+  logging: {
+    level: "debug",
+    enabled: true,
   },
 })
