@@ -1,35 +1,18 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Link from "next/link"
 
 export default function StudioAccessPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [studioUrl, setStudioUrl] = useState("https://5npbo3eo.sanity.studio/")
+  // Use the v0 preview URL provided by the user
+  const [studioUrl, setStudioUrl] = useState(
+    "https://kzmjpasfvg9lbi5uesm1.lite.vusercontent.net/studio/structure/poem;2035ffaa-afc4-4356-822c-ae0e76bf86aa",
+  )
 
   useEffect(() => {
-    // Check if we can access the Sanity API
-    const checkSanityAccess = async () => {
-      try {
-        const response = await fetch("https://5npbo3eo.api.sanity.io/v2023-05-03/projects/5npbo3eo", {
-          method: "HEAD",
-          cache: "no-store",
-        })
-
-        if (response.ok) {
-          setLoading(false)
-        } else {
-          setError(`Sanity API returned status: ${response.status}`)
-          setLoading(false)
-        }
-      } catch (err) {
-        setError(`Failed to connect to Sanity: ${err instanceof Error ? err.message : String(err)}`)
-        setLoading(false)
-      }
-    }
-
-    checkSanityAccess()
+    // Since we're using a v0 preview URL, we'll skip the API check
+    setLoading(false)
   }, [])
 
   const handleOpenStudio = () => {
@@ -40,35 +23,25 @@ export default function StudioAccessPage() {
     <div className="container mx-auto py-10 px-4 max-w-3xl">
       <h1 className="text-3xl font-bold mb-6">Sanity Studio Access</h1>
 
-      {loading ? (
-        <div className="bg-blue-50 p-6 rounded-lg mb-6">
-          <p className="text-blue-800">Checking Sanity connection...</p>
-        </div>
-      ) : error ? (
-        <div className="bg-yellow-50 p-6 rounded-lg mb-6">
-          <h2 className="text-xl font-semibold text-yellow-800 mb-2">Connection Issue Detected</h2>
-          <p className="text-yellow-800 mb-4">{error}</p>
-          <p className="text-yellow-800">You may still try to access the studio, but it might not work correctly.</p>
-        </div>
-      ) : (
-        <div className="bg-green-50 p-6 rounded-lg mb-6">
-          <h2 className="text-xl font-semibold text-green-800 mb-2">Connection Successful</h2>
-          <p className="text-green-800">Sanity API is accessible. You should be able to use the studio.</p>
-        </div>
-      )}
+      <div className="bg-blue-50 p-6 rounded-lg mb-6">
+        <h2 className="text-xl font-semibold text-blue-800 mb-2">v0 Preview Studio</h2>
+        <p className="text-blue-800 mb-4">
+          You're using a v0 preview URL for the Sanity Studio. This URL is specific to this preview session.
+        </p>
+      </div>
 
       <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-        <h2 className="text-xl font-semibold mb-4">Access Options</h2>
+        <h2 className="text-xl font-semibold mb-4">Access Studio</h2>
 
         <div className="space-y-4">
           <div>
-            <h3 className="font-medium mb-2">1. Direct Studio URL</h3>
+            <h3 className="font-medium mb-2">Current Studio URL</h3>
             <div className="flex items-center">
               <input
                 type="text"
                 value={studioUrl}
                 onChange={(e) => setStudioUrl(e.target.value)}
-                className="flex-grow p-2 border border-gray-300 rounded-l-md"
+                className="flex-grow p-2 border border-gray-300 rounded-l-md text-sm"
               />
               <button
                 onClick={handleOpenStudio}
@@ -77,18 +50,21 @@ export default function StudioAccessPage() {
                 Open
               </button>
             </div>
+            <p className="text-sm text-gray-500 mt-2">
+              This is a v0 preview URL and will only work in this preview session.
+            </p>
           </div>
 
           <div>
-            <h3 className="font-medium mb-2">2. Alternative Access Methods</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Link href="/external-studio" className="block p-4 bg-gray-100 rounded-lg hover:bg-gray-200 text-center">
-                Use Redirect Page
-              </Link>
-              <Link href="/studio" className="block p-4 bg-gray-100 rounded-lg hover:bg-gray-200 text-center">
-                Try Embedded Studio
-              </Link>
-            </div>
+            <h3 className="font-medium mb-2">Direct Access</h3>
+            <a
+              href={studioUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full py-2 px-4 bg-purple-600 text-white text-center rounded-md hover:bg-purple-700"
+            >
+              Open Studio in New Tab
+            </a>
           </div>
         </div>
       </div>
@@ -98,32 +74,10 @@ export default function StudioAccessPage() {
         <div className="space-y-3">
           <p className="font-medium">If you're seeing a "Studio not found" error:</p>
           <ol className="list-decimal pl-5 space-y-2">
-            <li>Make sure you're logged in to your Sanity account in your browser</li>
+            <li>Make sure you're using the correct v0 preview URL</li>
+            <li>Try refreshing the page and getting a new URL if needed</li>
             <li>Check that your browser allows third-party cookies</li>
             <li>Try using a different browser (Chrome or Firefox recommended)</li>
-            <li>Verify that you have the correct permissions for this project</li>
-            <li>
-              Try accessing the studio directly at{" "}
-              <a
-                href="https://5npbo3eo.sanity.studio/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-purple-600 hover:underline"
-              >
-                https://5npbo3eo.sanity.studio/
-              </a>
-            </li>
-            <li>
-              If all else fails, try using the{" "}
-              <a
-                href="https://www.sanity.io/manage"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-purple-600 hover:underline"
-              >
-                Sanity management console
-              </a>
-            </li>
           </ol>
         </div>
       </div>

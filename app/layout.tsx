@@ -6,6 +6,7 @@ import SiteFooter from "@/components/site-footer"
 import HiddenAdminLink from "@/components/hidden-admin-link"
 import { ThemeProvider } from "@/components/theme-provider"
 import SanityStatusIndicator from "@/components/sanity-status-indicator"
+import StudioDirectAccess from "@/components/studio-direct-access"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -30,6 +31,7 @@ export default function RootLayout({
             <SiteFooter />
             <HiddenAdminLink />
             <SanityStatusIndicator />
+            <StudioDirectAccess />
           </div>
         </ThemeProvider>
       </body>
