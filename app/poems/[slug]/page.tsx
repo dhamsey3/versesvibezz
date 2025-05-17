@@ -12,10 +12,27 @@ export default async function PoemPage({ params }: { params: { slug: string } })
   }
 
   try {
-    const poem = await getPoem(params.slug)
+    // First attempt: Try to get the poem using the regular Sanity client
+    let poem = await getPoem(params.slug)
 
-    // If we couldn't get the poem, try the hardcoded version
+    // If that fails, try the direct API approach
     if (!poem) {
+      console.log("Regular Sanity client failed, trying direct API fetch")
+      try {
+        // Use fetch with cache: 'no-store' to ensure fresh data
+        const response = await fetch(`/api/poem/${params.slug}`, { cache: "no-store" })
+        if (response.ok) {
+          const data = await response.json()
+          poem = data.poem
+        }
+      } catch (apiError) {
+        console.error("API fetch also failed:", apiError)
+      }
+    }
+
+    // If both methods fail, fall back to hardcoded content
+    if (!poem) {
+      console.log("All Sanity fetch methods failed, using hardcoded fallback")
       return <HardcodedPoemDisplay slug={params.slug} />
     }
 
