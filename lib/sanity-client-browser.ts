@@ -1,13 +1,13 @@
 "use client"
 
 import { createClient } from "next-sanity"
-import { sanityConfig } from "./config"
+import { sanityConfigClient } from "./sanity-config-client"
 
-// Create a client for browser use
+// Create a client for browser use with hardcoded config
 export const browserClient = createClient({
-  projectId: sanityConfig.projectId,
-  dataset: sanityConfig.dataset,
-  apiVersion: sanityConfig.apiVersion,
+  projectId: sanityConfigClient.projectId,
+  dataset: sanityConfigClient.dataset,
+  apiVersion: sanityConfigClient.apiVersion,
   useCdn: true,
 })
 

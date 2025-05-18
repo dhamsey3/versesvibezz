@@ -1,19 +1,17 @@
 import { defineConfig } from "sanity"
-import { structureTool } from "sanity/structure"
-import { visionTool } from "@sanity/vision"
-import { schemaTypes } from "./schemas"
-import { sanityConfig } from "./lib/sanity-config-fixed"
+import { deskTool } from "sanity/desk"
+import { schemas } from "./schemas"
 
-// Use the hardcoded configuration
 export default defineConfig({
-  name: "versesvibez",
-  title: "VersesVibez Poetry",
-  projectId: sanityConfig.projectId,
-  dataset: sanityConfig.dataset,
-  plugins: [structureTool(), visionTool()],
+  name: "default",
+  title: "VersesVibez",
+
+  // Hardcode the projectId to ensure it's always available
+  projectId: "5npbo3eo",
+  dataset: "production",
+
+  plugins: [deskTool()],
   schema: {
-    types: schemaTypes,
+    types: schemas,
   },
-  // Disable strict mode for more lenient error handling
-  strict: false,
 })

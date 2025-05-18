@@ -9,7 +9,7 @@ const apiVersion = "2023-05-03"
 
 // Create a client with credentials that can be used in client components
 export const clientSafe = createClient({
-  projectId,
+  projectId, // This is hardcoded and will never be undefined
   dataset,
   apiVersion,
   useCdn: true,
